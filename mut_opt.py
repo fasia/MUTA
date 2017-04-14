@@ -147,7 +147,7 @@ def CT(inp, tem,que):#change Target of transition
                             tra = t.find(strin)
                             #print 'in Template and transition is',tra.find('label').text
                             for s in tra.iter('target'):
-                                #print 'with source location',s.attrib,'candidate location is : ',r[ii]
+                                print('with source location',s.attrib,'candidate location is : ',r[ii])
                                 before= s.attrib['ref']
                                 if before != r[ii]:
                                     s.attrib['ref']=r[ii]
@@ -185,12 +185,13 @@ def CN(inp,tem,que): # change output transition name
                 if check[-1:]!= '!':
                     listOfTransitions[output_selection]=None # remove output synch
                 else: j+=1 # counting the number of output transitions
-            # #print 'all output transitions ',r, j
+            print('all output transitions ',listOfTransitions)
             for ii in range(len(listOfTransitions)):
                 for k in range(len(listOfTransitions)):
                     strin = 'transition['+str(k)+']'
                     #print("stin", strin)
                     MyName=inp+'MUT_CN'+str(k)+'_'+str(ii)+'.xml'
+                    print('tree', MyName, ' is made.')
                     tree.write(MyName)
                     treex = ET.parse(MyName)
                     rootx = treex.getroot()
@@ -204,26 +205,26 @@ def CN(inp,tem,que): # change output transition name
                             print(transitionsList[k].text)
                             transitionText= transitionsList[k].text
                             if transitionText[-1:]=='!':
-                                print("inside if")
-                                if transitionText != listOfTransitions[ii] and listOfTransitions[ii]!= None:
+                                print("inside if", 'transition is', transitionText)
+                                if transitionText != listOfTransitions[ii] and listOfTransitions[ii]!= None: # checks whether the transition name is different that selected transition
                                     print(t.find("./transition/label[@kind='synchronisation']").text)#=listOfTransitions[ii]
-                                    #print 'tarn name ',ss,'changes to', s.text
+                                    print ('tree is :',inp+'MUT_CN'+str(k)+'_'+str(ii)+'.xml')
                                     treex.write(inp+'MUT_CN'+str(k)+'_'+str(ii)+'.xml')
                                     i+=1
                                     #print MyName,'new tree is made for transitions',s.text
-                                    if CheckQuery(MyName):
-                                        Change_dir(MyName,'yes')
-                                    else:
-                                        Change_dir(MyName,'no')
+                                    #if CheckQuery(MyName):
+                                    #    Change_dir(MyName,'yes')
+                                    #else:
+                                    #    Change_dir(MyName,'no')
                                 else:
-                                    os.remove(inp+'MUT_CN'+str(k)+'_'+str(ii)+'.xml')
+                                    os.remove(MyName)
                                     # #print MyName,'it is deleted'
                             else:
-                                os.remove(inp+'MUT_CN'+str(k)+'_'+str(ii)+'.xml')
+                                os.remove(MyName)
 
-                        else:
-                            #print 'remove the unsync channels'
-                            os.remove(MyName)
+                        # else:
+                        #     #print 'remove the unsync channels'
+                        #     os.remove(MyName)
                             #print MyName,'it is deleted'
                             #print 'i is :', i
 
