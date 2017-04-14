@@ -58,7 +58,8 @@ def main(argv):
     root = tree.getroot()
     print(root.tag)
     NewDir (inputfile)
-    CN(inputfile[:-4],templatename,queryfile)
+    STS(inputfile[:-4], templatename)
+    #CN(inputfile[:-4],templatename,queryfile)
     #CS(inputfile[:-4], templatename,queryfile)
     #CT(inputfile[:-4], templatename,queryfile)
     #CG(inputfile[:-4], templatename,queryfile)
@@ -390,6 +391,56 @@ def SL(): # has problem
                                 Change_dir(MyName,'yes')
                             else:
                                 Change_dir(MyName,'no')
+
+
+#################################### switch Target and Source######################################
+
+def STS(inp, tem):
+    for t in root.findall('template'):
+        r =  [loc.attrib['id'] for loc in t.findall('location')]
+        r2 = [loc.find('label') for loc in t.findall('transition')]
+        #print 'number of transitions:', len(r),r, len(r2), r2
+        #print 'main temp', t.find('name').text
+        if t.find('name').text==tem:
+            for ii in range(len(r)):
+                for k in range(len(r2)):
+                    strin = 'transition['+str(k)+']'
+                    MyName=inp+'MUT_STS'+str(k)+'_'+str(ii)+'.xml'
+                    tree.write(MyName)
+                    treex = ET.parse(MyName)
+                    rootx = treex.getroot()
+                    for t in rootx.findall('template'):
+                        #print 'inside temp', t.find('name').text
+                        if t.find('name').text==tem:
+                            #print strin
+                            strin = 'transition['+str(k)+']'
+                            tra = t.find(strin)
+                            oldTarget = tra.find('target')
+                            oldSource= tra.find('source')
+                            print 'in ',MyName,'old target and old source :',oldTarget.attrib['ref'], oldSource.attrib['ref']
+                            #swap between the target and source
+                            temporary = oldSource.attrib['ref']
+                            oldSource.attrib['ref']= oldTarget.attrib['ref']
+                            oldTarget.attrib['ref']= temporary
+                            print 'in ',MyName,'new target and new source :',oldTarget.attrib['ref'], oldSource.attrib['ref']
+                            print '----------------------------------------'
+                            treex.write(MyName)
+                            # for s in tra.iter('target'):
+                            #     print('old target was',s.attrib,' is changed to a new source : ',r[ii])
+                            #     before= s.attrib['ref']
+                            #     if before != r[ii]:
+                            #         s.attrib['ref']=r[ii]
+                            #         #print 'location',before,'changes to', s.attrib
+                            #         treex.write(MyName)
+                            #         #print 'new tree is made'
+                            #         # if CheckQuery(MyName):
+                            #         #     Change_dir(MyName,'yes')
+                            #         # else:
+                            #         #     Change_dir(MyName,'no')
+                            #     else:
+                            #         os.remove(MyName)
+                            #         #print 'it is deleted'
+
 
 
 
