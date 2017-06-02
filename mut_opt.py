@@ -57,11 +57,13 @@ def main(argv):
     # MakeTree (inputfile)
     global tree, root
     tree= ET.parse(inputfile)
-    root = tree.getroot()
-    print(root.tag)
+    root= tree.getroot()
+    #print(root.tag)
     NewDir (inputfile)
-    declare_Trap(inputfile[:-4])
-   # STS(inputfile[:-4], templatename)
+    #declare_Trap(inputfile)
+    #tree= ET.parse(inputfile)
+    #root = tree.getroot()
+    STS(inputfile[:-4], templatename)
 #CN(inputfile[:-4],templatename,queryfile)
 #CS(inputfile[:-4], templatename,queryfile)
 #CT(inputfile[:-4], templatename,queryfile)
@@ -395,18 +397,20 @@ def SL(inp, tem): # has problem
                             # else:
                             #     Change_dir(MyName,'no')
 
-def declare_Trap(inp):
-    dec= root.find('declaration')
-    print 'dec is', dec.text
-    dec.text += '\nbool trap= false;'
-    print root.find('declaration').text
-    tree.write('newtree.xml')
+# def declare_Trap(inp):
+#     dec= root.find('declaration')
+#     print 'dec is', dec.text
+#     dec.text += '\nbool trap= false;'
+#     print root.find('declaration').text
+#     tree.write(inp)
 
 #################################### switch Target and Source######################################
 
 
 
 def STS(inp, tem):
+    dec= root.find('declaration')
+    dec.text += '\nbool trap= false; // reachability of the mutation canbe checked by this boolean variable'
     for t in root.findall('template'):
         r =  [loc.attrib['id'] for loc in t.findall('location')]
         r2 = [loc.find('label') for loc in t.findall('transition')]
@@ -428,10 +432,10 @@ def STS(inp, tem):
                             tra = t.find(strin)
                             assignment =  tra.find("label[@kind='assignment']")
                             #print assignment.index('kind')
-                            print 'the assign is:', assignment.text
+                            print 'the assign is:', assignment
                             if assignment != None:
-                                assignment.text += ', trap=true'
-                            print 'new ass', tra.find("label[@kind='assignment']").text
+                                assignment.text += ', \ntrap=true'
+                                print 'new ass', tra.find("label[@kind='assignment']").text
                             oldTarget = tra.find('target')
                             oldSource= tra.find('source')
                             print 'in ',MyName,'old target and old source :',oldTarget.attrib['ref'], oldSource.attrib['ref']
