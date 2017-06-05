@@ -58,20 +58,22 @@ def main(argv):
     global tree, root
     tree= ET.parse(inputfile)
     root= tree.getroot()
+    #print 'my test', [t.find(templatename) for t in root.findall(".//name")]
     #print(root.tag)
-    NewDir (inputfile)
-    #declare_Trap(inputfile)
-    #tree= ET.parse(inputfile)
-    #root = tree.getroot()
-    STS(inputfile[:-4], templatename)
+    #NewDir (inputfile[:-4])
 #CN(inputfile[:-4],templatename,queryfile)
 #CS(inputfile[:-4], templatename,queryfile)
-#CT(inputfile[:-4], templatename,queryfile)
+    #CT(inputfile[:-4], templatename,queryfile)
 #CG(inputfile[:-4], templatename,queryfile)
 #NG(inputfile[:-4],templatename,queryfile)
 #C_I(inputfile[:-4],templatename,queryfile)
 # IR(inputfile[:-4],templatename,queryfile)
 
+
+
+#--------------------------- HOM ----------------------------#
+    #STS(inputfile[:-4], templatename)
+    CTCN(inputfile[:-4], templatename)
 def NewDir(i):
     print('in NewDir')
     if not os.path.exists('Mutants_'+i[:-4]+'_Valid'):
@@ -414,7 +416,7 @@ def STS(inp, tem):
     for t in root.findall('template'):
         r =  [loc.attrib['id'] for loc in t.findall('location')]
         r2 = [loc.find('label') for loc in t.findall('transition')]
-        #print 'number of transitions:', len(r),r, len(r2), r2
+        print 'transitions:',  r2
         #print 'main temp', t.find('name').text
         if t.find('name').text==tem:
             for ii in range(len(r)):
@@ -455,22 +457,56 @@ def STS(inp, tem):
                             else:
                                 print 'the loop edge, and no mutation is generated'
                                 os.remove(MyName)
-                    #os.remove(MyName)
-                            # for s in tra.iter('target'):
-                            #     print('old target was',s.attrib,' is changed to a new source : ',r[ii])
-                            #     before= s.attrib['ref']
-                            #     if before != r[ii]:
-                            #         s.attrib['ref']=r[ii]
-                            #         #print 'location',before,'changes to', s.attrib
-                            #         treex.write(MyName)
-                            #         #print 'new tree is made'
-                            #         # if CheckQuery(MyName):
-                            #         #     Change_dir(MyName,'yes')
-                            #         # else:
-                            #         #     Change_dir(MyName,'no')
-                            #     else:
-                            #         os.remove(MyName)
-                            #         #print 'it is deleted'
+
+
+# it has still problem on generating two mutants that are equivalent to eachother
+def CTCN(inp, tem): # change target and change name
+    #for each mutated name of a transition:
+        # for each mutated target of a transition:
+            # generate a new file
+            # add the reachability
+            # check the reachabilty
+            #if it is reachable and deadlockfree:
+                #save the file as a valid mutant
+
+    dec= root.find('declaration')
+    dec.text += '\nbool trap= false; // reachability of the mutation canbe checked by this boolean variable'
+    t = root.find(".//template[name='"+str(tem)+"']")
+    listoflocations =  [loc.attrib['id'] for loc in t.findall('location')]
+    listoftransitions = [loc.find("label[@kind='synchronisation']").text for loc in t.findall('transition')]
+
+    for l in range(len(listoflocations)):
+        for transition in range(len(listoftransitions)):
+            i =0
+            for target in listoflocations:
+
+                #print 'l, trans, target', l, transition, target
+                currTarget = t.find("transition["+str(transition)+"]/target")
+                #print 'curtrans',currTrans.attrib['ref']
+                currTran =t.find("transition["+str(transition)+"]/label[@kind='synchronisation']").text
+
+                if currTarget.attrib['ref'] != target and currTran != listoftransitions[transition]:
+                    print 'not the same'
+                    print 'candidate transition:',listoftransitions[transition],'current transition: ', currTran
+                    print 'candidare target:', target, 'current target', currTarget.attrib['ref']
+                    #create new file
+                    MyName=inp+'MUT_CTCN_'+str(transition)+'_'+str(l)+str(i)+'.xml'
+                    tree.write(MyName)
+                    treex= ET.parse(MyName)
+                    rootx = treex.getroot()
+                    tx = rootx.find(".//template[name='"+str(tem)+"']")
+                    # mutation on target
+                    tx.find("transition["+str(transition)+"]/target").attrib['ref']= target
+                    #mutation on transition's name
+                    tx.find("transition["+str(transition)+"]/label[@kind='synchronisation']").text = listoftransitions[transition]
+
+                    #check if they are correctly mutated
+                    print 'mutated transition name is:', tx.find("transition["+str(transition)+"]/label[@kind='synchronisation']").text
+                    print 'mutated target is :', tx.find("transition["+str(transition)+"]/target").attrib['ref']
+
+                    treex.write(MyName)
+                    i =i+1
+
 
 
 
