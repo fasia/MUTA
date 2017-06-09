@@ -72,9 +72,11 @@ def main(argv):
 
 
 #--------------------------- HOM ----------------------------#
-    STS(inputfile[:-4], templatename)
-    CTN(inputfile[:-4], templatename)
-    CSN(inputfile[:-4], templatename)
+    # STS(inputfile[:-4], templatename)
+    # CTN(inputfile[:-4], templatename)
+    # CSN(inputfile[:-4], templatename)
+    #RT(inputfile[:-4], templatename)
+    DT(inputfile[:-4], templatename)
 def NewDir(i):
     print('in NewDir')
     if not os.path.exists('Mutants_'+i+'_Valid'):
@@ -237,22 +239,34 @@ def CN(inp,tem,que): # change output transition name
                             #print MyName,'it is deleted'
                             #print 'i is :', i
 
-def CheckQuery(MyName):
+def CheckQuery(reachability, MyName):
     try:
-        #print 'The name of the model: ', MyName
-        output = subprocess.check_output('verifyta -t0 -f mytrace '+MyName+' query1.q', shell=False)
-        #print 'output is ',output
-        result_sat = re.search(r'\bProperty is satisfied',str(output))
-        result_not_sat = re.search(r'\bProperty is NOT satisfied.',str(output))
-        output2 = subprocess.check_output('verifyta -t0 -f mytrace '+MyName+' query2.q', shell=False)
+        if reachability: # if reachability variable is true, then check reachability and deadlockfreeness,
 
-        result_sat2 = re.search(r'\bProperty is satisfied', str(output2))
-        result_not_sat2 = re.search(r'\bProperty is NOT satisfied.', str(output2))
-        #print 'result of regex:', result_sat, result_not_sat
-        if result_sat!=None and result_not_sat2 != None:
-            return True
-        else:
-            return False
+            #print 'The name of the model: ', MyName
+            output = subprocess.check_output('verifyta -t0 -f mytrace '+MyName+' query1.q', shell=False)
+            #print 'output is ',output
+            result_sat = re.search(r'\bProperty is satisfied',str(output))
+            result_not_sat = re.search(r'\bProperty is NOT satisfied.',str(output))
+            output2 = subprocess.check_output('verifyta -t0 -f mytrace '+MyName+' query2.q', shell=False)
+
+            result_sat2 = re.search(r'\bProperty is satisfied', str(output2))
+            result_not_sat2 = re.search(r'\bProperty is NOT satisfied.', str(output2))
+            #print 'result of regex:', result_sat, result_not_sat
+            if result_sat!=None and result_not_sat2 != None:
+                return True
+            else:
+                return False
+        else: # otherwise we only check the deadlockfreeness
+            output = subprocess.check_output('verifyta -t0 -f mytrace ' + MyName + ' query1.q', shell=False)
+            # print 'output is ',output
+            result_sat = re.search(r'\bProperty is satisfied', str(output))
+
+            if result_sat!=None :
+                return True
+            else:
+                return False
+
     except subprocess.CalledProcessError:
         # print 'here is an error'
         return False
@@ -442,13 +456,16 @@ def IR(inp, tem, que):
                         #
                         # else:
                         #     os.remove(MyName)
+
+
 ####################################  Higher-Order Mutation Generators ######################################
 
 
 
 def STS(inp, tem):
     #dec= root.find('declaration')
-    #dec.text += '\nbool trap= false; // reachability of the mutation canbe checked by this boolean variable'
+    #dec.text += '\nbool trap= false;
+    #  // reachability of the mutation canbe checked by this boolean variable'
     for t in root.findall('template'):
         r =  [loc.attrib['id'] for loc in t.findall('location')]
         r2 = [loc.find('label') for loc in t.findall('transition')]
@@ -625,14 +642,55 @@ def CSN(inp, tem):  # change source and  name
                         treex.write(MyName)
 
                         # apply the verification by calling verifyta
-                        if CheckQuery(MyName):
+                        if CheckQuery(True, MyName): # true means that we have to check both queries: reachability and deadlock
+
                             Change_dir(MyName,'yes')
                         else:
                             Change_dir(MyName,'no')
                         i = i + 1
 
-
+#remove a transition
 def RT(inp, tem):
+    #dec = root.find('declaration')
+    #dec.text += '\nbool trap= false; // reachability of the mutation canbe checked by this boolean variable'
+    t = root.find(".//template[name='" + str(tem) + "']")
+    #listoflocations = [loc.attrib['id'] for loc in t.findall('location')]
+    listoftransitions = [loc.find("label[@kind='synchronisation']").text for loc in t.findall('transition')]
+    #for l in range(len(listoflocations)):
+    for transition in range(len(listoftransitions)):
+                    # print 'l, trans, target', l, transition, source
+
+        currTran = t.find(
+            "transition[" + str(transition) + "]/label[@kind='synchronisation']")
+
+        # create new file
+        MyName = inp + 'MUT_RT_' + str(transition) + '_' + '.xml'
+        tree.write(MyName)
+        treex = ET.parse(MyName)
+        rootx = treex.getroot()
+        tx = rootx.find(".//template[name='" + str(tem) + "']")
+
+        # delete transition
+        el=tx.find("transition[" + str(
+            transition) + "]")
+        print 'element is :', el
+        tx.remove(el)
+
+        # check if they are correctly mutated
+        #print 'mutated transition name is:', tx.find("transition[" + str(
+        #    transition) + "]/label[@kind='synchronisation']").text
+
+        treex.write(MyName)
+
+        # apply the verification by calling verifyta
+        if CheckQuery(False,MyName):
+            Change_dir(MyName, 'yes')
+        else:
+            Change_dir(MyName, 'no')
+
+
+# duplicate a transition
+def DT(inp, tem):
     #dec = root.find('declaration')
     #dec.text += '\nbool trap= false; // reachability of the mutation canbe checked by this boolean variable'
     t = root.find(".//template[name='" + str(tem) + "']")
@@ -652,58 +710,39 @@ def RT(inp, tem):
                     "transition[" + str(transition) + "]/label[@kind='synchronisation']")
                 if currTran != None:  # we check if the transition is actually a synchronisation
 
-                    if currSource.attrib['ref'] != source and currTran.text != listoftransitions[
-                        transition]:
-                        print 'not the same'
-                        print 'candidate transition:', listoftransitions[
-                            transition], 'current transition: ', currTran.text
-                        print 'candidare source:', source, 'current source', currSource.attrib[
-                            'ref']
+                    print 'candidate transition:', listoftransitions[
+                        transition], 'current transition: ', currTran.text
+                    print 'candidare source:', source, 'current source', currSource.attrib[
+                        'ref']
 
-                        # create new file
-                        MyName = inp + 'MUT_CSN_' + str(transition) + '_' + str(l) + str(
-                            i) + '.xml'
-                        tree.write(MyName)
-                        treex = ET.parse(MyName)
-                        rootx = treex.getroot()
-                        tx = rootx.find(".//template[name='" + str(tem) + "']")
+                    # create new file
+                    MyName = inp + 'MUT_CT_' + str(transition) + '_' + str(l) + str(
+                        i) + '.xml'
+                    tree.write(MyName)
+                    treex = ET.parse(MyName)
+                    rootx = treex.getroot()
+                    tx = rootx.find(".//template[name='" + str(tem) + "']")
 
-                        # mutation on target
-                        tx.find("transition[" + str(transition) + "]/source").attrib['ref'] = source
-                        # mutation on transition's name
-                        tx.find("transition[" + str(
-                            transition) + "]/label[@kind='synchronisation']").text = \
-                            listoftransitions[transition]
+                    # make a new transition
 
-                        # reachability settings
-                        assignment = tx.find(
-                            "transition[" + str(transition) + "]/label[@kind='assignment']")
-                        if assignment != None:
-                            assignment.text += ',\ntrap=true'
-                            print "in the assignment setting- if"
-                        else:
-                            ele = tx.find("transition[" + str(transition) + "]")
-                            assignmentAttrib = {"kind": "assignment", "x": "-20", "y": "-20"}
-                            el = ET.SubElement(ele, "label", attrib=assignmentAttrib)
-                            el.text = "trap=true"
-                            # ET.tostring(rootx)
-                            print el
-                            print "in the assignment setting - else"
+                    newTransition = tx.find(
+                        "transition[" + str(transition) + "]")
+                    copyelem = copy.deepcopy(newTransition)
+                    print 'copy element', copyelem
+                    tx.append(copyelem)
 
-                        # check if they are correctly mutated
-                        print 'mutated transition name is:', tx.find("transition[" + str(
-                            transition) + "]/label[@kind='synchronisation']").text
-                        print 'mutated source is :', tx.find("transition[" + str(transition) + "]/source").attrib['ref']
 
-                        treex.write(MyName)
 
-                        # apply the verification by calling verifyta
-                        if CheckQuery(MyName):
-                            Change_dir(MyName, 'yes')
-                        else:
-                            Change_dir(MyName, 'no')
-                        i = i + 1
 
+                    treex.write(MyName)
+
+                    # apply the verification by calling verifyta
+                    if CheckQuery(False, MyName): # true means that we have to check both queries: reachability and deadlock
+
+                        Change_dir(MyName,'yes')
+                    else:
+                        Change_dir(MyName,'no')
+                    i = i + 1
 
 # NewDir()
 # CN()
