@@ -698,26 +698,28 @@ def DT(inp, tem):
     listoftransitions = [loc.find("label[@kind='synchronisation']").text for loc in
                          t.findall('transition')]
 
-    for l in range(len(listoflocations)):
-        for transition in range(len(listoftransitions)):
-            i = 0
-            for source in listoflocations:
+    for transi in range(len(listoftransitions)):
+        for newSource in range(len(listoflocations)):
+            #i = 0
+            for newtarget in range(len(listoflocations)):
 
-                # print 'l, trans, target', l, transition, source
-                currSource = t.find("transition[" + str(transition) + "]/source")
+                print 'transi, listof transit', transi, listoftransitions[transi]
+                currSource = t.find("transition[" + str(transi) + "]/source")
                 # print 'curtrans',currTrans.attrib['ref']
+                currtarget = t.find("transition[" + str(transi) + "]/target")
                 currTran = t.find(
-                    "transition[" + str(transition) + "]/label[@kind='synchronisation']")
+                    "transition[" + str(transi) + "]/label[@kind='synchronisation']")
+                print "transi, newsource and newtarget", transi, newSource, newtarget
+                #print "cursource and cu target", currSource.attrib['ref'], currtarget.attrib['ref']
                 if currTran != None:  # we check if the transition is actually a synchronisation
 
-                    print 'candidate transition:', listoftransitions[
-                        transition], 'current transition: ', currTran.text
-                    print 'candidare source:', source, 'current source', currSource.attrib[
-                        'ref']
+                    print 'candidate transition:', transi, 'current transition: ', currTran.text
+                    print currSource.attrib['ref'], "to" ,currtarget.attrib['ref'], 'will change to', \
+                        listoflocations[newSource],"to", listoflocations[newtarget]
 
                     # create new file
-                    MyName = inp + 'MUT_CT_' + str(transition) + '_' + str(l) + str(
-                        i) + '.xml'
+                    MyName = inp + 'MUT_DT_' + str(transi) + '_' + str(newSource) + str(
+                        newtarget) + '.xml'
                     tree.write(MyName)
                     treex = ET.parse(MyName)
                     rootx = treex.getroot()
@@ -726,23 +728,27 @@ def DT(inp, tem):
                     # make a new transition
 
                     newTransition = tx.find(
-                        "transition[" + str(transition) + "]")
+                        "transition[" + str(transi) + "]")
                     copyelem = copy.deepcopy(newTransition)
-                    print 'copy element', copyelem
+                    #print 'copy element', copyelem
+                    #mutate the copied element
+                    print "copy element target is: ", copyelem.find("target").attrib['ref']
+                    copyelem.find("target").attrib['ref']= listoflocations[newtarget]
+                    print"copy element traget is mutated to", copyelem.find("target").attrib['ref']
+
+                    print "copy element source is: ", copyelem.find("source").attrib['ref']
+                    copyelem.find("target").attrib['ref'] = listoflocations[newSource]
+                    print"copy element source is mutated to", copyelem.find("source").attrib['ref']
                     tx.append(copyelem)
-
-
-
-
                     treex.write(MyName)
 
                     # apply the verification by calling verifyta
-                    if CheckQuery(False, MyName): # true means that we have to check both queries: reachability and deadlock
-
-                        Change_dir(MyName,'yes')
-                    else:
-                        Change_dir(MyName,'no')
-                    i = i + 1
+                    # if CheckQuery(False, MyName): # true means that we have to check both queries: reachability and deadlock
+                    #
+                    #     Change_dir(MyName,'yes')
+                    # else:
+                    #     Change_dir(MyName,'no')
+                   # i = i + 1
 
 # NewDir()
 # CN()
