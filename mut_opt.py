@@ -247,13 +247,13 @@ def CheckQuery(reachability, MyName):
             output = subprocess.check_output('verifyta -t0 -f mytrace '+MyName+' query1.q', shell=False)
             #print 'output is ',output
             result_sat = re.search(r'\bProperty is satisfied',str(output))
-            result_not_sat = re.search(r'\bProperty is NOT satisfied.',str(output))
+            #result_not_sat = re.search(r'\bProperty is NOT satisfied.',str(output))
             output2 = subprocess.check_output('verifyta -t0 -f mytrace '+MyName+' query2.q', shell=False)
 
             result_sat2 = re.search(r'\bProperty is satisfied', str(output2))
-            result_not_sat2 = re.search(r'\bProperty is NOT satisfied.', str(output2))
+            #result_not_sat2 = re.search(r'\bProperty is NOT satisfied.', str(output2))
             #print 'result of regex:', result_sat, result_not_sat
-            if result_sat!=None and result_not_sat2 != None:
+            if result_sat2!= None and result_sat != None:
                 return True
             else:
                 return False
@@ -703,19 +703,19 @@ def DT(inp, tem):
             #i = 0
             for newtarget in range(len(listoflocations)):
 
-                print 'transi, listof transit', transi, listoftransitions[transi]
+                #print 'transi, listof transit', transi, listoftransitions[transi]
                 currSource = t.find("transition[" + str(transi) + "]/source")
                 # print 'curtrans',currTrans.attrib['ref']
                 currtarget = t.find("transition[" + str(transi) + "]/target")
                 currTran = t.find(
                     "transition[" + str(transi) + "]/label[@kind='synchronisation']")
-                print "transi, newsource and newtarget", transi, newSource, newtarget
+                #print "transi, newsource and newtarget", transi, newSource, newtarget
                 #print "cursource and cu target", currSource.attrib['ref'], currtarget.attrib['ref']
                 if currTran != None:  # we check if the transition is actually a synchronisation
 
-                    print 'candidate transition:', transi, 'current transition: ', currTran.text
-                    print currSource.attrib['ref'], "to" ,currtarget.attrib['ref'], 'will change to', \
-                        listoflocations[newSource],"to", listoflocations[newtarget]
+                    #print 'candidate transition:', transi, 'current transition: ', currTran.text
+                    #print currSource.attrib['ref'], "to" ,currtarget.attrib['ref'], 'will change to', \
+                     #   listoflocations[newSource],"to", listoflocations[newtarget]
 
                     # create new file
                     MyName = inp + 'MUT_DT_' + str(transi) + '_' + str(newSource) + str(
@@ -732,23 +732,116 @@ def DT(inp, tem):
                     copyelem = copy.deepcopy(newTransition)
                     #print 'copy element', copyelem
                     #mutate the copied element
-                    print "copy element target is: ", copyelem.find("target").attrib['ref']
+                    #print "copy element target is: ", copyelem.find("target").attrib['ref']
                     copyelem.find("target").attrib['ref']= listoflocations[newtarget]
-                    print"copy element traget is mutated to", copyelem.find("target").attrib['ref']
+                    #print"copy element traget is mutated to", copyelem.find("target").attrib['ref']
 
-                    print "copy element source is: ", copyelem.find("source").attrib['ref']
+                    #print "copy element source is: ", copyelem.find("source").attrib['ref']
                     copyelem.find("target").attrib['ref'] = listoflocations[newSource]
-                    print"copy element source is mutated to", copyelem.find("source").attrib['ref']
+                    #print"copy element source is mutated to", copyelem.find("source").attrib['ref']
+
+                    # reachability settings
+                    assignment = copyelem.find("label[@kind='assignment']")
+                    print 'assignment', assignment
+                    if assignment != None:
+                        assignment.text += ',\ntrap=true'
+                        print "in the assignment setting- if"
+                    else:
+                        assignmentAttrib = {"kind": "assignment", "x": "-20", "y": "-20"}
+                        el = ET.SubElement(copyelem, "label", attrib=assignmentAttrib)
+                        el.text = "trap=true"
+                        # ET.tostring(rootx)
+                        print el
+                        print "in the assignment setting - else"
                     tx.append(copyelem)
+
                     treex.write(MyName)
 
                     # apply the verification by calling verifyta
-                    # if CheckQuery(False, MyName): # true means that we have to check both queries: reachability and deadlock
-                    #
-                    #     Change_dir(MyName,'yes')
-                    # else:
-                    #     Change_dir(MyName,'no')
-                   # i = i + 1
+                    # true means that we have to check both queries: reachability and deadlock
+                    if CheckQuery(True, MyName):
+
+                        Change_dir(MyName,'yes')
+                    else:
+                        Change_dir(MyName,'no')
+
+
+
+ # exchange invariant and guard
+# def EIG(inp, tem):
+#     # dec = root.find('declaration')
+#     # dec.text += '\nbool trap= false; // reachability of the mutation canbe checked by this boolean variable'
+#     t = root.find(".//template[name='" + str(tem) + "']")
+#     listoflocations = [loc.attrib['id'] for loc in t.findall('location')]
+#     listoftransitions = [loc.find("label[@kind='synchronisation']").text for loc in
+#                          t.findall('transition')]
+#
+#     for l in range(len(listoflocations)):
+#         for transition in range(len(listoftransitions)):
+#             i = 0
+#             for source in listoflocations:
+#
+#                 # print 'l, trans, target', l, transition, source
+#                 currSource = t.find("transition[" + str(transition) + "]/source")
+#                 # print 'curtrans',currTrans.attrib['ref']
+#                 currTran = t.find(
+#                     "transition[" + str(transition) + "]/label[@kind='synchronisation']")
+#                 if currTran != None:  # we check if the transition is actually a synchronisation
+#
+#                     if currSource.attrib['ref'] != source and currTran.text != listoftransitions[
+#                         transition]:
+#                         print 'not the same'
+#                         print 'candidate transition:', listoftransitions[
+#                             transition], 'current transition: ', currTran.text
+#                         print 'candidare source:', source, 'current source', currSource.attrib[
+#                             'ref']
+#
+#                         # create new file
+#                         MyName = inp + 'MUT_CSN_' + str(transition) + '_' + str(l) + str(
+#                             i) + '.xml'
+#                         tree.write(MyName)
+#                         treex = ET.parse(MyName)
+#                         rootx = treex.getroot()
+#                         tx = rootx.find(".//template[name='" + str(tem) + "']")
+#
+#                         # mutation on target
+#                         tx.find("transition[" + str(transition) + "]/source").attrib['ref'] = source
+#                         # mutation on transition's name
+#                         tx.find("transition[" + str(
+#                             transition) + "]/label[@kind='synchronisation']").text = \
+#                             listoftransitions[transition]
+#
+#                         # reachability settings
+#                         assignment = tx.find(
+#                             "transition[" + str(transition) + "]/label[@kind='assignment']")
+#                         if assignment != None:
+#                             assignment.text += ',\ntrap=true'
+#                             print "in the assignment setting- if"
+#                         else:
+#                             ele = tx.find("transition[" + str(transition) + "]")
+#                             assignmentAttrib = {"kind": "assignment", "x": "-20", "y": "-20"}
+#                             el = ET.SubElement(ele, "label", attrib=assignmentAttrib)
+#                             el.text = "trap=true"
+#                             # ET.tostring(rootx)
+#                             print el
+#                             print "in the assignment setting - else"
+#
+#                         # check if they are correctly mutated
+#                         print 'mutated transition name is:', tx.find("transition[" + str(
+#                             transition) + "]/label[@kind='synchronisation']").text
+#                         print 'mutated source is :', tx.find("transition[" + str(transition) + "]/source").attrib['ref']
+#
+#                         treex.write(MyName)
+#
+#                         # apply the verification by calling verifyta
+#                         if CheckQuery(True,
+#                                       MyName):  # true means that we have to check both queries: reachability and deadlock
+#
+#                             Change_dir(MyName, 'yes')
+#                         else:
+#                             Change_dir(MyName, 'no')
+#                         i = i + 1
+
 
 # NewDir()
 # CN()
