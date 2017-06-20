@@ -72,12 +72,12 @@ def main(argv):
 
 
 #--------------------------- HOM ----------------------------#
-    # STS(inputfile[:-4], templatename)
+    STS(inputfile[:-4], templatename)
     # CTN(inputfile[:-4], templatename)
     # CSN(inputfile[:-4], templatename)
-    #RT(inputfile[:-4], templatename)
-    #DT(inputfile[:-4], templatename)
-    EIG(inputfile[:-4], templatename)
+    # RT(inputfile[:-4], templatename)
+    # DT(inputfile[:-4], templatename)
+    # EIG(inputfile[:-4], templatename)
 def NewDir(i):
     print('in NewDir')
     if not os.path.exists('Mutants_'+i+'_Valid'):
@@ -467,50 +467,65 @@ def STS(inp, tem):
     #dec= root.find('declaration')
     #dec.text += '\nbool trap= false;
     #  // reachability of the mutation canbe checked by this boolean variable'
-    for t in root.findall('template'):
-        r =  [loc.attrib['id'] for loc in t.findall('location')]
-        r2 = [loc.find('label') for loc in t.findall('transition')]
-        print 'transitions:',  r2
-        #print 'main temp', t.find('name').text
-        if t.find('name').text==tem:
-            for ii in range(len(r)):
-                for k in range(len(r2)):
-                    strin = 'transition['+str(k)+']'
-                    MyName=inp+'MUT_STS'+str(k)+'_'+str(ii)+'.xml'
-                    tree.write(MyName)
-                    treex = ET.parse(MyName)
-                    rootx = treex.getroot()
-                    for t in rootx.findall('template'):
-                        #print 'inside temp', t.find('name').text
-                        if t.find('name').text==tem:
-                            #print strin
-                            strin = 'transition['+str(k)+']'
-                            tra = t.find(strin)
-                            assignment =  tra.find("label[@kind='assignment']")
-                            #print assignment.index('kind')
-                            print 'the assign is:', assignment
-                            if assignment != None:
-                                assignment.text += ', \ntrap=true'
-                                print 'new ass', tra.find("label[@kind='assignment']").text
-                            oldTarget = tra.find('target')
-                            oldSource= tra.find('source')
-                            print 'in ',MyName,'old target and old source :',oldTarget.attrib['ref'], oldSource.attrib['ref']
-                            #if it is a loop then target and source are the same
-                            if oldSource.attrib['ref'] != oldTarget.attrib['ref']:
-                                #swap between the target and source
-                                temporary = oldSource.attrib['ref']
-                                oldSource.attrib['ref']= oldTarget.attrib['ref']
-                                oldTarget.attrib['ref']= temporary
-                                print 'in ',MyName,' is mutating with new target and new source :',oldTarget.attrib['ref'], oldSource.attrib['ref']
-                                print '----------------------------------------'
-                                treex.write(MyName)
-                                if CheckQuery(MyName):
-                                    Change_dir(MyName,'yes')
-                                else:
-                                    Change_dir(MyName,'no')
-                            else:
-                                print 'the loop edge, and no mutation is generated'
-                                os.remove(MyName)
+    t = root.find(".//template[name='" + str(tem) + "']")
+    listoflocations = [loc.attrib['id'] for loc in t.findall('location')]
+    listoftransitions =  t.findall('transition')
+    print 'tran', listoftransitions
+    synch= []
+    for tt in listoftransitions:
+        if tt.find("label[@kind='synchronisation']")!= None:
+            synch.append(tt)
+    print 'list of transitions', synch
+    for transition in synch:
+        #-----------------------------------------------------------------------------------------
+        print 'current transition', listoftransitions[transition]
+        i = 0
+        MyName=inp+'MUT_STS'+str(transition)+'.xml'
+        tree.write(MyName)
+        treex = ET.parse(MyName)
+        rootx = treex.getroot()
+        t2= rootx.find(".//template[name='" + str(tem) + "']")
+
+        # add trap in the declaration
+        #dec = rootx.find('declaration')
+        #dec.text += '\nbool trap= false;'
+        currTarget = t2.find("transition[" + str(transition) + "]/target")
+        currentSource = t2.find("transition[" + str(transition) + "]/source")
+        currTran = t2.find("transition[" + str(transition) + "]/label[@kind='synchronisation']")
+
+        print 'in ',MyName,'old target and old source :',currTarget.attrib['ref'], currentSource.attrib['ref']
+        #if it is a loop then target and source are the same
+        if currentSource.attrib['ref'] != currTarget.attrib['ref']:
+            #swap between the target and source
+            temporary = currentSource.attrib['ref']
+            currentSource.attrib['ref']= currTarget.attrib['ref']
+            currTarget.attrib['ref']= temporary
+            print 'in ',MyName,' is mutating with new target and new source :',currTarget.attrib['ref'], currentSource.attrib['ref']
+            assignment = t2.find("transition[" + str(transition) + "]/label[@kind='assignment']")
+            # print assignment.index('kind')
+            print 'the assign is:', assignment
+            if assignment != None:
+                assignment.text += ',\ntrap=true'
+                print 'new ass', t2.find("transition[" + str(transition) + "]/label[@kind='assignment']").text
+            else:
+                ele = t.find("transition[" + str(transition) + "]")
+                assignmentAttrib = {"kind": "assignment", "x": "-20", "y": "-20"}
+                el = ET.SubElement(ele, "label", attrib=assignmentAttrib)
+                el.text = "trap=true"
+                # ET.tostring(rootx)
+                print el
+                print "in the assignment setting - else"
+            treex.write(MyName)
+            if CheckQuery(True, MyName):
+                Change_dir(MyName,'yes')
+            else:
+                Change_dir(MyName,'no')
+        else:
+            print 'the loop edge, and no mutation is generated'
+            os.remove(MyName)
+        print '--------------------------------------'
+        i = i+1
+
 
 
 # it has still problem on generating two mutants that are equivalent to eachother
@@ -519,7 +534,7 @@ def CTN(inp, tem): # change target and change name
     #dec.text += '\nbool trap= false; // reachability of the mutation canbe checked by this boolean variable'
     t = root.find(".//template[name='"+str(tem)+"']")
     listoflocations =  [loc.attrib['id'] for loc in t.findall('location')]
-    listoftransitions = [loc.find("label[@kind='synchronisation']").text for loc in t.findall('transition')]
+    listoftransitions = [loc.find("label[@kind='synchronisation']") for loc in t.findall('transition')]
 
     for l in range(len(listoflocations)):
         for transition in range(len(listoftransitions)):
@@ -568,7 +583,7 @@ def CTN(inp, tem): # change target and change name
                         treex.write(MyName)
 
                         #apply the verification by calling verifyta
-                        if CheckQuery(MyName):
+                        if CheckQuery(True, MyName):
                             Change_dir(MyName,'yes')
                         else:
                             Change_dir(MyName,'no')
@@ -582,7 +597,7 @@ def CSN(inp, tem):  # change source and  name
     #dec.text += '\nbool trap= false; // reachability of the mutation canbe checked by this boolean variable'
     t = root.find(".//template[name='" + str(tem) + "']")
     listoflocations = [loc.attrib['id'] for loc in t.findall('location')]
-    listoftransitions = [loc.find("label[@kind='synchronisation']").text for loc in
+    listoftransitions = [loc.find("label[@kind='synchronisation']") for loc in
                          t.findall('transition')]
 
     for l in range(len(listoflocations)):
@@ -656,7 +671,7 @@ def RT(inp, tem):
     #dec.text += '\nbool trap= false; // reachability of the mutation canbe checked by this boolean variable'
     t = root.find(".//template[name='" + str(tem) + "']")
     #listoflocations = [loc.attrib['id'] for loc in t.findall('location')]
-    listoftransitions = [loc.find("label[@kind='synchronisation']").text for loc in t.findall('transition')]
+    listoftransitions = [loc.find("label[@kind='synchronisation']") for loc in t.findall('transition')]
     #for l in range(len(listoflocations)):
     for transition in range(len(listoftransitions)):
                     # print 'l, trans, target', l, transition, source
