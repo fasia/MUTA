@@ -22,7 +22,7 @@ import shutil
 
 # current path
 currpath= os.getcwd()
-print("now ",currpath)
+#print("now ",currpath)
 # with open('myverify.txt', 'a') as file:
 #     file.write('verifyta -t0 -f tracefile')
 # print Address_Invalid_Mut, Address_Valid_Mut
@@ -73,13 +73,14 @@ def main(argv):
 
 #--------------------------- HOM ----------------------------#
     STS(inputfile[:-4], templatename)
-    # CTN(inputfile[:-4], templatename)
-    # CSN(inputfile[:-4], templatename)
-    # RT(inputfile[:-4], templatename)
-    # DT(inputfile[:-4], templatename)
-    # EIG(inputfile[:-4], templatename)
+    CTN(inputfile[:-4], templatename)
+    CSN(inputfile[:-4], templatename)
+    RT(inputfile[:-4], templatename)
+    DT(inputfile[:-4], templatename)
+    EIG(inputfile[:-4], templatename)
+
 def NewDir(i):
-    print('in NewDir')
+    #print('in NewDir')
     if not os.path.exists('Mutants_'+i+'_Valid'):
         os.makedirs('Mutants_'+i+'_Valid')
 
@@ -98,7 +99,7 @@ def Change_dir(MyMy,answer):
         print('moved to invalid folder')
 
 def CS(inp,tem,que):#change Source of transition
-    print('in cc')
+    #print('in cc')
     for t in root.findall('template'):
         r =  [loc.attrib['id'] for loc in t.findall('location')]
         r2 = [loc.find('label') for loc in t.findall('transition')]
@@ -464,22 +465,22 @@ def IR(inp, tem, que):
 
 
 def STS(inp, tem):
+    print '-------------------------------------------------------------------------'
+    print 'Mutation Operator STS (Switch Target and Source) is started.'
     #dec= root.find('declaration')
     #dec.text += '\nbool trap= false;
     #  // reachability of the mutation canbe checked by this boolean variable'
     t = root.find(".//template[name='" + str(tem) + "']")
-    listoflocations = [loc.attrib['id'] for loc in t.findall('location')]
+    #listoflocations = [loc.attrib['id'] for loc in t.findall('location')]
     listoftransitions =  t.findall('transition')
-    print 'tran', listoftransitions
+    #print 'tran', listoftransitions
     synch= []
     for tt in listoftransitions:
         if tt.find("label[@kind='synchronisation']")!= None:
             synch.append(tt)
-    print 'list of transitions', synch
-    for transition in synch:
-        #-----------------------------------------------------------------------------------------
-        print 'current transition', listoftransitions[transition]
-        i = 0
+    #print 'list of transitions', synch
+    for transition in range(len(synch)):
+        #print 'current transition', synch[transition]
         MyName=inp+'MUT_STS'+str(transition)+'.xml'
         tree.write(MyName)
         treex = ET.parse(MyName)
@@ -487,49 +488,53 @@ def STS(inp, tem):
         t2= rootx.find(".//template[name='" + str(tem) + "']")
 
         # add trap in the declaration
-        #dec = rootx.find('declaration')
-        #dec.text += '\nbool trap= false;'
+        dec = rootx.find('declaration')
+        dec.text += '\nbool trap= false;'
         currTarget = t2.find("transition[" + str(transition) + "]/target")
         currentSource = t2.find("transition[" + str(transition) + "]/source")
         currTran = t2.find("transition[" + str(transition) + "]/label[@kind='synchronisation']")
 
-        print 'in ',MyName,'old target and old source :',currTarget.attrib['ref'], currentSource.attrib['ref']
+        #print 'in ',MyName,'old target and old source :',currTarget.attrib['ref'], currentSource.attrib['ref']
         #if it is a loop then target and source are the same
         if currentSource.attrib['ref'] != currTarget.attrib['ref']:
             #swap between the target and source
             temporary = currentSource.attrib['ref']
             currentSource.attrib['ref']= currTarget.attrib['ref']
             currTarget.attrib['ref']= temporary
-            print 'in ',MyName,' is mutating with new target and new source :',currTarget.attrib['ref'], currentSource.attrib['ref']
+            #print 'in ',MyName,' is mutating with new target and new source :',currTarget.attrib['ref'], currentSource.attrib['ref']
             assignment = t2.find("transition[" + str(transition) + "]/label[@kind='assignment']")
             # print assignment.index('kind')
-            print 'the assign is:', assignment
+            #print 'the assign is:', assignment
             if assignment != None:
                 assignment.text += ',\ntrap=true'
-                print 'new ass', t2.find("transition[" + str(transition) + "]/label[@kind='assignment']").text
+               # print 'new ass', t2.find("transition[" + str(transition) + "]/label[@kind='assignment']").text
             else:
-                ele = t.find("transition[" + str(transition) + "]")
+                ele = t2.find("transition[" + str(transition) + "]")
                 assignmentAttrib = {"kind": "assignment", "x": "-20", "y": "-20"}
                 el = ET.SubElement(ele, "label", attrib=assignmentAttrib)
                 el.text = "trap=true"
                 # ET.tostring(rootx)
-                print el
-                print "in the assignment setting - else"
+              #  print el
+             #   print "in the assignment setting - else"
             treex.write(MyName)
-            if CheckQuery(True, MyName):
-                Change_dir(MyName,'yes')
-            else:
-                Change_dir(MyName,'no')
+            print 'Mutant', str(MyName),'is generated.'
+
+            if os.name == 'nt':
+                if CheckQuery(True, MyName):
+                    Change_dir(MyName,'yes')
+                else:
+                    Change_dir(MyName,'no')
         else:
-            print 'the loop edge, and no mutation is generated'
+            #print 'the loop edge, and no mutation is generated'
             os.remove(MyName)
-        print '--------------------------------------'
-        i = i+1
 
 
 
 # it has still problem on generating two mutants that are equivalent to eachother
 def CTN(inp, tem): # change target and change name
+    print '-------------------------------------------------------------------------'
+
+    print 'Mutation operator Change Target and name (CTN) is started.'
     #dec= root.find('declaration')
     #dec.text += '\nbool trap= false; // reachability of the mutation canbe checked by this boolean variable'
     t = root.find(".//template[name='"+str(tem)+"']")
@@ -545,12 +550,12 @@ def CTN(inp, tem): # change target and change name
                 if currTran != None: # we check if the transition is actually a synchronisation
 
                     if currTarget.attrib['ref'] != target and currTran.text != listoftransitions[transition]:
-                        print 'not the same'
-                        print 'candidate transition:',listoftransitions[transition],'current transition: ', currTran.text
-                        print 'candidare target:', target, 'current target', currTarget.attrib['ref']
+                        #print 'not the same'
+                        #print 'candidate transition:',listoftransitions[transition],'current transition: ', currTran.text
+                        #print 'candidare target:', target, 'current target', currTarget.attrib['ref']
 
                         #create new file
-                        MyName=inp+'MUT_CTCN_'+str(transition)+'_'+str(l)+str(i)+'.xml'
+                        MyName=inp+'MUT_CTN'+str(transition)+str(l)+str(i)+'.xml'
                         tree.write(MyName)
                         treex= ET.parse(MyName)
                         rootx = treex.getroot()
@@ -565,34 +570,39 @@ def CTN(inp, tem): # change target and change name
                         assignment = tx.find("transition["+str(transition)+"]/label[@kind='assignment']")
                         if assignment != None:
                             assignment.text += ',\ntrap=true'
-                            print "in the assignment setting- if"
+                            #print "in the assignment setting- if"
                         else:
                             ele = tx.find("transition["+str(transition)+"]")
                             assignmentAttrib = {"kind":"assignment", "x": "-20", "y":"-20"}
                             el= ET.SubElement(ele, "label", attrib= assignmentAttrib)
                             el.text= "trap=true"
                             #ET.tostring(rootx)
-                            print el
-                            print "in the assignment setting - else"
+                            #print el
+                            #print "in the assignment setting - else"
 
 
                         #check if they are correctly mutated
-                        print 'mutated transition name is:', tx.find("transition["+str(transition)+"]/label[@kind='synchronisation']").text
-                        print 'mutated target is :', tx.find("transition["+str(transition)+"]/target").attrib['ref']
+                        #print 'mutated transition name is:', tx.find("transition["+str(transition)+"]/label[@kind='synchronisation']").text
+                        #print 'mutated target is :', tx.find("transition["+str(transition)+"]/target").attrib['ref']
 
                         treex.write(MyName)
+                        print 'Mutant', str(MyName),'is generated.'
 
-                        #apply the verification by calling verifyta
-                        if CheckQuery(True, MyName):
-                            Change_dir(MyName,'yes')
-                        else:
-                            Change_dir(MyName,'no')
+                    #apply the verification by calling verifyta
+                        if os.name == 'nt':
+                            if CheckQuery(True, MyName):
+                                Change_dir(MyName,'yes')
+                            else:
+                                Change_dir(MyName,'no')
                         i =i+1
 
 
 
 # ChangeSourceandName
 def CSN(inp, tem):  # change source and  name
+    print '-------------------------------------------------------------------------'
+
+    print 'Mutation operator Change Source and Name (CSN) is started.'
     #dec = root.find('declaration')
     #dec.text += '\nbool trap= false; // reachability of the mutation canbe checked by this boolean variable'
     t = root.find(".//template[name='" + str(tem) + "']")
@@ -614,14 +624,14 @@ def CSN(inp, tem):  # change source and  name
 
                     if currSource.attrib['ref'] != source and currTran.text != listoftransitions[
                         transition]:
-                        print 'not the same'
-                        print 'candidate transition:', listoftransitions[
-                            transition], 'current transition: ', currTran.text
-                        print 'candidare source:', source, 'current source', currSource.attrib[
-                            'ref']
+                        #print 'not the same'
+                        #print 'candidate transition:', listoftransitions[
+                          #  transition], 'current transition: ', currTran.text
+                        #print 'candidare source:', source, 'current source', currSource.attrib[
+                         #   'ref']
 
                         # create new file
-                        MyName = inp + 'MUT_CSN_' + str(transition) + '_' + str(l) + str(
+                        MyName = inp + 'MUT_CSN' + str(transition) + str(l) + str(
                             i) + '.xml'
                         tree.write(MyName)
                         treex = ET.parse(MyName)
@@ -640,33 +650,39 @@ def CSN(inp, tem):  # change source and  name
                             "transition[" + str(transition) + "]/label[@kind='assignment']")
                         if assignment != None:
                             assignment.text += ',\ntrap=true'
-                            print "in the assignment setting- if"
+                            #print "in the assignment setting- if"
                         else:
                             ele = tx.find("transition[" + str(transition) + "]")
                             assignmentAttrib = {"kind": "assignment", "x": "-20", "y": "-20"}
                             el = ET.SubElement(ele, "label", attrib=assignmentAttrib)
                             el.text = "trap=true"
                             # ET.tostring(rootx)
-                            print el
-                            print "in the assignment setting - else"
+                            #print el
+                            #print "in the assignment setting - else"
 
                         # check if they are correctly mutated
-                        print 'mutated transition name is:', tx.find("transition[" + str(
-                            transition) + "]/label[@kind='synchronisation']").text
-                        print 'mutated source is :', tx.find("transition[" + str(transition) + "]/source").attrib['ref']
+                        #print 'mutated transition name is:', tx.find("transition[" + str(
+                         #   transition) + "]/label[@kind='synchronisation']").text
+                        #print 'mutated source is :', tx.find("transition[" + str(transition) + "]/source").attrib['ref']
 
                         treex.write(MyName)
+                        print 'Mutant', str(MyName),'is generated.'
+
 
                         # apply the verification by calling verifyta
-                        if CheckQuery(True, MyName): # true means that we have to check both queries: reachability and deadlock
+                        if os.name == 'nt':
+                            if CheckQuery(True, MyName): # true means that we have to check both queries: reachability and deadlock
 
-                            Change_dir(MyName,'yes')
-                        else:
-                            Change_dir(MyName,'no')
+                                Change_dir(MyName,'yes')
+                            else:
+                                Change_dir(MyName,'no')
                         i = i + 1
 
 #remove a transition
 def RT(inp, tem):
+    print '-------------------------------------------------------------------------'
+
+    print 'Mutation operator Remove Transition (RT) is started.'
     #dec = root.find('declaration')
     #dec.text += '\nbool trap= false; // reachability of the mutation canbe checked by this boolean variable'
     t = root.find(".//template[name='" + str(tem) + "']")
@@ -680,7 +696,7 @@ def RT(inp, tem):
             "transition[" + str(transition) + "]/label[@kind='synchronisation']")
 
         # create new file
-        MyName = inp + 'MUT_RT_' + str(transition) + '_' + '.xml'
+        MyName = inp + 'MUT_RT' + str(transition) + '.xml'
         tree.write(MyName)
         treex = ET.parse(MyName)
         rootx = treex.getroot()
@@ -689,7 +705,7 @@ def RT(inp, tem):
         # delete transition
         el=tx.find("transition[" + str(
             transition) + "]")
-        print 'element is :', el
+        #print 'element is :', el
         tx.remove(el)
 
         # check if they are correctly mutated
@@ -697,16 +713,21 @@ def RT(inp, tem):
         #    transition) + "]/label[@kind='synchronisation']").text
 
         treex.write(MyName)
+        print 'Mutant', str(MyName),'is generated.'
 
-        # apply the verification by calling verifyta
-        if CheckQuery(False,MyName):
-            Change_dir(MyName, 'yes')
-        else:
-            Change_dir(MyName, 'no')
+    # apply the verification by calling verifyta
+        if os.name == 'nt':
+            if CheckQuery(False,MyName):
+                Change_dir(MyName, 'yes')
+            else:
+                Change_dir(MyName, 'no')
 
 
 # duplicate a transition
 def DT(inp, tem):
+    print '-------------------------------------------------------------------------'
+
+    print 'Mutation operator Douplicate Transition (DT) is started.'
     #dec = root.find('declaration')
     #dec.text += '\nbool trap= false; // reachability of the mutation canbe checked by this boolean variable'
     t = root.find(".//template[name='" + str(tem) + "']")
@@ -734,7 +755,7 @@ def DT(inp, tem):
                      #   listoflocations[newSource],"to", listoflocations[newtarget]
 
                     # create new file
-                    MyName = inp + 'MUT_DT_' + str(transi) + '_' + str(newSource) + str(
+                    MyName = inp + 'MUT_DT' + str(transi) + str(newSource) + str(
                         newtarget) + '.xml'
                     tree.write(MyName)
                     treex = ET.parse(MyName)
@@ -758,28 +779,29 @@ def DT(inp, tem):
 
                     # reachability settings
                     assignment = copyelem.find("label[@kind='assignment']")
-                    print 'assignment', assignment
+                    #print 'assignment', assignment
                     if assignment != None:
                         assignment.text += ',\ntrap=true'
-                        print "in the assignment setting- if"
+                     #   print "in the assignment setting- if"
                     else:
                         assignmentAttrib = {"kind": "assignment", "x": "-20", "y": "-20"}
                         el = ET.SubElement(copyelem, "label", attrib=assignmentAttrib)
                         el.text = "trap=true"
                         # ET.tostring(rootx)
-                        print el
-                        print "in the assignment setting - else"
+                      #  print el
+                       # print "in the assignment setting - else"
                     tx.append(copyelem)
 
                     treex.write(MyName)
-
+                    print 'Mutant', str(MyName), 'is made.'
                     # apply the verification by calling verifyta
                     # true means that we have to check both queries: reachability and deadlock
-                    if CheckQuery(True, MyName):
+                    if os.name == 'nt':
+                        if CheckQuery(True, MyName):
 
-                        Change_dir(MyName,'yes')
-                    else:
-                        Change_dir(MyName,'no')
+                            Change_dir(MyName,'yes')
+                        else:
+                            Change_dir(MyName,'no')
 
 
 
@@ -787,6 +809,9 @@ def DT(inp, tem):
 
 #exchange invariant and guard
 def EIG(inp, tem):
+    print '-------------------------------------------------------------------------'
+
+    print 'Mutation operator Exchange Invariant and Guard (EIG) is started.'
     t = root.find(".//template[name='" + str(tem) + "']")
     listoflocations = [loc.attrib['id'] for loc in t.findall('location')]
     listoftransitions = [loc.find("label[@kind='synchronisation']") for loc in
@@ -796,7 +821,7 @@ def EIG(inp, tem):
         i = 0
         locationObject = t.find("location["+str(l)+"]")#/label[@kind='invariant']")
         if locationObject.find("label[@kind='invariant']") != None:
-            print 'location has an inv', locationObject
+            #print 'location has an inv', locationObject
             locName = locationObject.attrib['id']
             locInv = locationObject.find("label[@kind='invariant']").text
             #print 'the name is', locName
@@ -808,7 +833,7 @@ def EIG(inp, tem):
                         #print 'here we are'
 
                         #create new file
-                        MyName = inp + 'MUT_EIG_' + str(l) + '_' + str(i) + '.xml'
+                        MyName = inp + 'MUT_EIG' + str(l) + str(i) + '.xml'
                         i=i+1
                         tree.write(MyName)
                         treex = ET.parse(MyName)
@@ -816,39 +841,41 @@ def EIG(inp, tem):
 
                         txx = rootx.find(".//template[name='" + str(tem) + "']")
                         # check if the transition has a guard
-                        print 'check if ', locName
+                        #print 'check if ', locName
                         currentSource = txx.find("transition["+str(alltran)+"]/source").attrib['ref']
                         currentGuard = txx.find("transition["+str(alltran)+"]/label[@kind='guard']")
                         # if a transition is from the current location and it has guard
                         if currentSource == locName and currentGuard != None:
 
-                            print 'before inv and guard:', locInv, currentGuard
+                            #print 'before inv and guard:', locInv, currentGuard
                             txx.find("location[" + str(l) + "]/label[@kind='invariant']").text = currentGuard.text
-                            print 'new invariant is', txx.find("location[" + str(l) + "]/label[@kind='invariant']").text
+                            #print 'new invariant is', txx.find("location[" + str(l) + "]/label[@kind='invariant']").text
                             currentGuard.text = locInv
-                            print 'new guard is:', txx.find("transition["+str(alltran)+"]/label[@kind='guard']").text
+                            #print 'new guard is:', txx.find("transition["+str(alltran)+"]/label[@kind='guard']").text
 
                             # reachability settings
                             assignment = txx.find(
                                 "transition[" + str(alltran) + "]/label[@kind='assignment']")
                             if assignment != None:
                                 assignment.text += ',\ntrap=true'
-                                print "in the assignment setting- if"
+                                #print "in the assignment setting- if"
                             else:
                                 ele = txx.find("transition[" + str(alltran) + "]")
                                 assignmentAttrib = {"kind": "assignment", "x": "-20", "y": "-20"}
                                 el = ET.SubElement(ele, "label", attrib=assignmentAttrib)
                                 el.text = "trap=true"
                                 # ET.tostring(rootx)
-                                print el
-                                print "in the assignment setting - else"
+                                #print el
+                                #print "in the assignment setting - else"
                             treex.write(MyName)
-                        # check the reachability and deadlockfree
-                            if CheckQuery(True, MyName):
+                            print 'Mutant', str(MyName),'is generated.'
+                            # check the reachability and deadlockfree
+                            if os.name == 'nt':
+                                if CheckQuery(True, MyName):
 
-                                Change_dir(MyName, 'yes')
-                            else:
-                                Change_dir(MyName, 'no')
+                                    Change_dir(MyName, 'yes')
+                                else:
+                                    Change_dir(MyName, 'no')
                         else:
                             os.remove(MyName)
 
