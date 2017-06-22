@@ -2,6 +2,7 @@ __author__ = 'fsiavash'
 
 import sys, getopt
 import xml.etree.ElementTree as ET
+#from lxml import etree
 import random
 import os
 import os.path
@@ -72,12 +73,12 @@ def main(argv):
 
 
 #--------------------------- HOM ----------------------------#
-    STS(inputfile[:-4], templatename)
-    CTN(inputfile[:-4], templatename)
+    #STS(inputfile[:-4], templatename)
+    #CTN(inputfile[:-4], templatename)
     CSN(inputfile[:-4], templatename)
-    RT(inputfile[:-4], templatename)
-    DT(inputfile[:-4], templatename)
-    EIG(inputfile[:-4], templatename)
+    #RT(inputfile[:-4], templatename)
+    #DT(inputfile[:-4], templatename)
+    #EIG(inputfile[:-4], templatename)
 
 def NewDir(i):
     #print('in NewDir')
@@ -488,8 +489,8 @@ def STS(inp, tem):
         t2= rootx.find(".//template[name='" + str(tem) + "']")
 
         # add trap in the declaration
-        dec = rootx.find('declaration')
-        dec.text += '\nbool trap= false;'
+        #dec = rootx.find('declaration')
+        #dec.text += '\nbool trap= false;'
         currTarget = t2.find("transition[" + str(transition) + "]/target")
         currentSource = t2.find("transition[" + str(transition) + "]/source")
         currTran = t2.find("transition[" + str(transition) + "]/label[@kind='synchronisation']")
@@ -511,8 +512,10 @@ def STS(inp, tem):
             else:
                 ele = t2.find("transition[" + str(transition) + "]")
                 assignmentAttrib = {"kind": "assignment", "x": "-20", "y": "-20"}
-                el = ET.SubElement(ele, "label", attrib=assignmentAttrib)
-                el.text = "trap=true"
+                item = ET.Element("label")
+                item.text = "trap=true"
+                item.attrib = assignmentAttrib
+                ele.insert(3, item)
                 # ET.tostring(rootx)
               #  print el
              #   print "in the assignment setting - else"
@@ -542,6 +545,7 @@ def CTN(inp, tem): # change target and change name
     listoftransitions = [loc.find("label[@kind='synchronisation']") for loc in t.findall('transition')]
 
     for l in range(len(listoflocations)):
+        #print 'num', len(listoflocations), len(listoftransitions), len(listoflocations)
         for transition in range(len(listoftransitions)):
             i =0
             for target in listoflocations:
@@ -551,31 +555,38 @@ def CTN(inp, tem): # change target and change name
 
                     if currTarget.attrib['ref'] != target and currTran.text != listoftransitions[transition]:
                         #print 'not the same'
-                        #print 'candidate transition:',listoftransitions[transition],'current transition: ', currTran.text
-                        #print 'candidare target:', target, 'current target', currTarget.attrib['ref']
+                        print 'candidate transition:',listoftransitions[transition].text,'current transition: ', currTran.text
+                        print 'candidare target:', target, 'current target', currTarget.attrib['ref']
 
                         #create new file
                         MyName=inp+'MUT_CTN'+str(transition)+str(l)+str(i)+'.xml'
                         tree.write(MyName)
                         treex= ET.parse(MyName)
                         rootx = treex.getroot()
+                        i = i + 1
                         tx = rootx.find(".//template[name='"+str(tem)+"']")
 
                         # mutation on target
                         tx.find("transition["+str(transition)+"]/target").attrib['ref']= target
                         #mutation on transition's name
-                        tx.find("transition["+str(transition)+"]/label[@kind='synchronisation']").text = listoftransitions[transition]
+                        tx.find("transition["+str(transition)+"]/label[@kind='synchronisation']").text = listoftransitions[transition].text
 
+                        print 'new transition is', tx.find("transition["+str(transition)+"]/label[@kind='synchronisation']").text
+                        print 'new target is', tx.find("transition["+str(transition)+"]/target").attrib['ref']
                         #reachability settings
                         assignment = tx.find("transition["+str(transition)+"]/label[@kind='assignment']")
                         if assignment != None:
                             assignment.text += ',\ntrap=true'
                             #print "in the assignment setting- if"
                         else:
+
                             ele = tx.find("transition["+str(transition)+"]")
-                            assignmentAttrib = {"kind":"assignment", "x": "-20", "y":"-20"}
-                            el= ET.SubElement(ele, "label", attrib= assignmentAttrib)
-                            el.text= "trap=true"
+                            assignmentAttrib = {"kind": "assignment", "x": "-20", "y": "-20"}
+                            item = ET.Element("label")
+                            item.text = "trap=true"
+                            item.attrib= assignmentAttrib
+                            ele.insert(3,item)
+
                             #ET.tostring(rootx)
                             #print el
                             #print "in the assignment setting - else"
@@ -594,7 +605,9 @@ def CTN(inp, tem): # change target and change name
                                 Change_dir(MyName,'yes')
                             else:
                                 Change_dir(MyName,'no')
-                        i =i+1
+
+                    else:
+                        os.remove(MyName)
 
 
 
@@ -652,10 +665,12 @@ def CSN(inp, tem):  # change source and  name
                             assignment.text += ',\ntrap=true'
                             #print "in the assignment setting- if"
                         else:
-                            ele = tx.find("transition[" + str(transition) + "]")
+                            ele = tx.find("transition["+str(transition)+"]")
                             assignmentAttrib = {"kind": "assignment", "x": "-20", "y": "-20"}
-                            el = ET.SubElement(ele, "label", attrib=assignmentAttrib)
-                            el.text = "trap=true"
+                            item = ET.Element("label")
+                            item.text = "trap=true"
+                            item.attrib= assignmentAttrib
+                            ele.insert(3,item)
                             # ET.tostring(rootx)
                             #print el
                             #print "in the assignment setting - else"
