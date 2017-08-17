@@ -1,4 +1,4 @@
-# MUTA
+# MuUTA
 Mutation generator from Uppaal Timed Automata
 MuUTA is a tool for generating mutations from Uppaal timed automata. It contains different mutation operators which manipulate a given UTA model and create various versions of the model with slight changes in each version. 
 The tool validates the generated mutants based on two main verification properties: deadlockfree and reachability
