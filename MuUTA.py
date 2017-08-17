@@ -62,23 +62,21 @@ def main(argv):
     #print 'my test', [t.find(templatename) for t in root.findall(".//name")]
     #print(root.tag)
     NewDir (inputfile[:-4])
-#CN(inputfile[:-4],templatename,queryfile)
-#CS(inputfile[:-4], templatename,queryfile)
-#CT(inputfile[:-4], templatename,queryfile)
-#CG(inputfile[:-4], templatename,queryfile)
-#NG(inputfile[:-4],templatename,queryfile)
-#C_I(inputfile[:-4],templatename,queryfile)
-# IR(inputfile[:-4],templatename,queryfile)
-
-
+    #CN(inputfile[:-4],templatename)
+    #CS(inputfile[:-4], templatename,queryfile)
+    #CT(inputfile[:-4], templatename,queryfile)
+    #CG(inputfile[:-4], templatename,queryfile)
+    #NG(inputfile[:-4],templatename,queryfile)
+    #C_I(inputfile[:-4],templatename,queryfile)
+    # IR(inputfile[:-4],templatename,queryfile)
 
 #--------------------------- HOM ----------------------------#
     STS(inputfile[:-4], templatename)
-    #CTN(inputfile[:-4], templatename)
-    #CSN(inputfile[:-4], templatename)
-    #RT(inputfile[:-4], templatename)
-    #DT(inputfile[:-4], templatename)
-    #EIG(inputfile[:-4], templatename)
+    CTN(inputfile[:-4], templatename)
+    CSN(inputfile[:-4], templatename)
+    RT(inputfile[:-4], templatename)
+    DT(inputfile[:-4], templatename)
+    EIG(inputfile[:-4], templatename)
 
 def NewDir(i):
     #print('in NewDir')
@@ -176,7 +174,7 @@ def CT(inp, tem,que):#change Target of transition
                                     os.remove(MyName)
                                 #print 'it is deleted'
 
-def CN(inp,tem,que): # change output transition name
+def CN(inp,tem): # change output transition name
     i=0
     j=0
     # get the transitions in the target template
@@ -226,10 +224,12 @@ def CN(inp,tem,que): # change output transition name
                                     treex.write(inp+'MUT_CN'+str(k)+'_'+str(ii)+'.xml')
                                     i+=1
                                 #print MyName,'new tree is made for transitions',s.text
-                                #if CheckQuery(MyName):
-                                #    Change_dir(MyName,'yes')
-                                #else:
-                                #    Change_dir(MyName,'no')
+                                    if os.name == 'nt':
+                                        if CheckQuery(False, MyName):
+
+                                            Change_dir(MyName, 'yes')
+                                        else:
+                                            Change_dir(MyName, 'no')
                                 else:
                                     os.remove(MyName)
                                 # #print MyName,'it is deleted'
@@ -555,8 +555,8 @@ def CTN(inp, tem): # change target and change name
 
                     if currTarget.attrib['ref'] != target and currTran.text != listoftransitions[transition]:
                         #print 'not the same'
-                        print 'candidate transition:',listoftransitions[transition].text,'current transition: ', currTran.text
-                        print 'candidare target:', target, 'current target', currTarget.attrib['ref']
+                        #print 'candidate transition:',listoftransitions[transition].text,'current transition: ', currTran.text
+                        #print 'candidare target:', target, 'current target', currTarget.attrib['ref']
 
                         #create new file
                         MyName=inp+'MUT_CTN'+str(transition)+str(l)+str(i)+'.xml'
@@ -606,8 +606,8 @@ def CTN(inp, tem): # change target and change name
                             else:
                                 Change_dir(MyName,'no')
 
-                    else:
-                        os.remove(MyName)
+                        else:
+                            os.remove(MyName)
 
 
 
@@ -696,7 +696,6 @@ def CSN(inp, tem):  # change source and  name
 #remove a transition
 def RT(inp, tem):
     print '-------------------------------------------------------------------------'
-
     print 'Mutation operator Remove Transition (RT) is started.'
     #dec = root.find('declaration')
     #dec.text += '\nbool trap= false; // reachability of the mutation canbe checked by this boolean variable'
@@ -720,7 +719,7 @@ def RT(inp, tem):
         # delete transition
         el=tx.find("transition[" + str(
             transition) + "]")
-        #print 'element is :', el
+
         tx.remove(el)
 
         # check if they are correctly mutated
@@ -747,7 +746,7 @@ def DT(inp, tem):
     #dec.text += '\nbool trap= false; // reachability of the mutation canbe checked by this boolean variable'
     t = root.find(".//template[name='" + str(tem) + "']")
     listoflocations = [loc.attrib['id'] for loc in t.findall('location')]
-    listoftransitions = [loc.find("label[@kind='synchronisation']").text for loc in
+    listoftransitions = [loc.find("label[@kind='synchronisation']") for loc in
                          t.findall('transition')]
 
     for transi in range(len(listoftransitions)):
@@ -761,6 +760,7 @@ def DT(inp, tem):
                 currtarget = t.find("transition[" + str(transi) + "]/target")
                 currTran = t.find(
                     "transition[" + str(transi) + "]/label[@kind='synchronisation']")
+                #print "current transition", currTran.text
                 #print "transi, newsource and newtarget", transi, newSource, newtarget
                 #print "cursource and cu target", currSource.attrib['ref'], currtarget.attrib['ref']
                 if currTran != None:  # we check if the transition is actually a synchronisation
@@ -770,8 +770,8 @@ def DT(inp, tem):
                      #   listoflocations[newSource],"to", listoflocations[newtarget]
 
                     # create new file
-                    MyName = inp + 'MUT_DT' + str(transi) + str(newSource) + str(
-                        newtarget) + '.xml'
+                    MyName = inp + 'DT' +'_tran'+ str(transi)+'_fromloc' + str(
+                        newtarget) +'to_loc'+ str(newSource) + '.xml'
                     tree.write(MyName)
                     treex = ET.parse(MyName)
                     rootx = treex.getroot()
@@ -784,13 +784,14 @@ def DT(inp, tem):
                     copyelem = copy.deepcopy(newTransition)
                     #print 'copy element', copyelem
                     #mutate the copied element
-                    #print "copy element target is: ", copyelem.find("target").attrib['ref']
+                    tx.append(copyelem)
+                    print "copy element target is: ", copyelem.find("target").attrib['ref']
                     copyelem.find("target").attrib['ref']= listoflocations[newtarget]
-                    #print"copy element traget is mutated to", copyelem.find("target").attrib['ref']
+                    print"copy element traget is mutated to", copyelem.find("target").attrib['ref']
 
-                    #print "copy element source is: ", copyelem.find("source").attrib['ref']
-                    copyelem.find("target").attrib['ref'] = listoflocations[newSource]
-                    #print"copy element source is mutated to", copyelem.find("source").attrib['ref']
+                    print "copy element source is: ", copyelem.find("source").attrib['ref']
+                    copyelem.find("source").attrib['ref'] = listoflocations[newSource]
+                    print"copy element source is mutated to", copyelem.find("source").attrib['ref']
 
                     # reachability settings
                     assignment = copyelem.find("label[@kind='assignment']")
@@ -799,16 +800,19 @@ def DT(inp, tem):
                         assignment.text += ',\ntrap=true'
                      #   print "in the assignment setting- if"
                     else:
-                        ele = tx.find("transition[" + str(transi) + "]")
+
+                        #ele = tx.find("transition[" + str(transi) + "]")
                         assignmentAttrib = {"kind": "assignment", "x": "-20", "y": "-20"}
                         item = ET.Element("label")
                         item.text = "trap=true"
                         item.attrib = assignmentAttrib
-                        ele.insert(3, item)
+                        copyelem.insert(3, item)
+                    print"copy element source is mutated to", copyelem.find("source").attrib['ref']
+                    print"copy element traget is mutated to", copyelem.find("target").attrib['ref']
                         # ET.tostring(rootx)
                       #  print el
                        # print "in the assignment setting - else"
-                    tx.append(copyelem)
+
 
                     treex.write(MyName)
                     print 'Mutant', str(MyName), 'is made.'
@@ -844,9 +848,10 @@ def EIG(inp, tem):
             locInv = locationObject.find("label[@kind='invariant']").text
             #print 'the name is', locName
             # find all transitions which are emitted from this location
-            for alltran in range(len(listoftransitions)-1):
-                #print 'all', alltran
-                if listoflocations[alltran] != None:
+
+            for alltran in range(len(listoftransitions)):
+                print 'all', alltran, range(len(listoftransitions)-1), len(listoftransitions)
+                if listoftransitions[alltran] != None:
                     if t.find("transition["+str(alltran)+"]/source").attrib['ref']==locName:
                         #print 'here we are'
 
