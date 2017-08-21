@@ -71,8 +71,8 @@ def main(argv):
     # IR(inputfile[:-4],templatename,queryfile)
 
 #--------------------------- HOM ----------------------------#
-    STS(inputfile[:-4], templatename)
-    CTN(inputfile[:-4], templatename)
+    #STS(inputfile[:-4], templatename)
+    #CTN(inputfile[:-4], templatename)
     CSN(inputfile[:-4], templatename)
     RT(inputfile[:-4], templatename)
     DT(inputfile[:-4], templatename)
