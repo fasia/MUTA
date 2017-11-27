@@ -62,21 +62,21 @@ def main(argv):
     #print 'my test', [t.find(templatename) for t in root.findall(".//name")]
     #print(root.tag)
     NewDir (inputfile[:-4])
-    #CN(inputfile[:-4],templatename)
-    #CS(inputfile[:-4], templatename,queryfile)
-    #CT(inputfile[:-4], templatename,queryfile)
-    #CG(inputfile[:-4], templatename,queryfile)
-    #NG(inputfile[:-4],templatename,queryfile)
-    #C_I(inputfile[:-4],templatename,queryfile)
-    # IR(inputfile[:-4],templatename,queryfile)
+    CN(inputfile[:-4],templatename)
+    CS(inputfile[:-4], templatename)
+    CT(inputfile[:-4], templatename,queryfile)
+    CG(inputfile[:-4], templatename,queryfile)
+    NG(inputfile[:-4],templatename,queryfile)
+    C_I(inputfile[:-4],templatename,queryfile)
+    IR(inputfile[:-4],templatename,queryfile)
 
 #--------------------------- HOM ----------------------------#
     #STS(inputfile[:-4], templatename)
     #CTN(inputfile[:-4], templatename)
-    CSN(inputfile[:-4], templatename)
-    RT(inputfile[:-4], templatename)
-    DT(inputfile[:-4], templatename)
-    EIG(inputfile[:-4], templatename)
+    #CSN(inputfile[:-4], templatename)
+    #RT(inputfile[:-4], templatename)
+    #DT(inputfile[:-4], templatename)
+    #EIG(inputfile[:-4], templatename)
 
 def NewDir(i):
     #print('in NewDir')
@@ -97,7 +97,7 @@ def Change_dir(MyMy,answer):
         shutil.move(MyMy,dist_inv)
         print('moved to invalid folder')
 
-def CS(inp,tem,que):#change Source of transition
+def CS(inp,tem):#change Source of transition
     #print('in cc')
     for t in root.findall('template'):
         r =  [loc.attrib['id'] for loc in t.findall('location')]
@@ -129,7 +129,7 @@ def CS(inp,tem,que):#change Source of transition
                                     treex.write(MyName)
                                     # addme= 'MUT_CS'+str(k)+'_'+str(ii)+'.xml'
                                     # print 'new tree is made'
-                                    if CheckQuery(MyName):
+                                    if CheckQuery(True,MyName):
                                         Change_dir(MyName,'yes')
                                     else:
                                         Change_dir(MyName,'no')
@@ -166,7 +166,7 @@ def CT(inp, tem,que):#change Target of transition
                                     #print 'location',before,'changes to', s.attrib
                                     treex.write(MyName)
                                     #print 'new tree is made'
-                                    if CheckQuery(MyName):
+                                    if CheckQuery(True,MyName):
                                         Change_dir(MyName,'yes')
                                     else:
                                         Change_dir(MyName,'no')
