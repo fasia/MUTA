@@ -100,18 +100,26 @@ def Change_dir(MyMy,answer):
 def CS(inp,tem):#change Source of transition
     #print('in cc')
     for t in root.findall('template'):
-        locations =  [loc.attrib['id'] for loc in t.findall('location')]
-        transitions = [loc.find('label') for loc in t.findall('transition')]
+        locations =  [loc for loc in t.findall('location')]
+        transitions = [tran for tran in t.findall('transition')]
         print('number of transitions:', len(locations),locations, len(transitions), transitions)
         print('main temp', t.find('name').text)
         if t.find('name').text==tem: # check if the template is the selected template to mutate
             for tr in transitions: #for each transition
-                sou=tr.iter('source')
-                print "current transition is:", tr.text, "from ", sou.kind['source'] , # " to ", tr.iter('./target')
+                sou=tr.find('source')
+                currentSource=sou.attrib['ref']
+                print "current transition is:", tr , "from ", currentSource ,  " to ", tr.find('target')
                 for lo in locations: # for each location
-
-                    print "         new source of the location is:", lo
-                    #if tr.iter('source')!= lo:
+                    newSource =lo.attrib['id']
+                    if sou.attrib['ref']!= lo.attrib['id']:
+                        print "        new source of the location is:", lo.attrib['id']
+                        # make a new copy of the tree, find the source and change it
+                        myMutation = inp+'Mut_CS'+currentSource+'_'+newSource+'.xml'
+                        tree.write(myMutation)
+                        tree2= ET.parse(myMutation)
+                        root2= tree2.getroot()
+                        tem2=root2.findall("template[@name='sut']")
+                        print tem2
 
 
 
