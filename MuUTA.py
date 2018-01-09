@@ -28,7 +28,7 @@ handler.setFormatter(formatter)
 
 # add the handlers to the logger
 logger.addHandler(handler)
-logger.info('*****************************Generator has started.****************************************')
+#logger.info('*****************************Generator has started.****************************************')
 # nameoffile= 'timed-gate.xml'
 # tree = ET.parse(nameoffile)
 # root = tree.getroot()
@@ -74,23 +74,30 @@ def main(argv):
     global tree, root
     tree= ET.parse(inputfile)
     root= tree.getroot()
+
+    # parent_map = dict((c, p) for p in tree.getiterator() for c in p)
+    # for k in parent_map.itervalues():
+    #     print k
+    # print '-----------------------------------------------------'
+    # for k in parent_map.iterkeys():
+    #     print k.text
     #print 'my test', [t.find(templatename) for t in root.findall(".//name")]
     #print(root.tag)
     NewDir (inputfile[:-4])
     #CN(inputfile[:-4],templatename)
     #CS(inputfile[:-4], templatename)
-    CT(inputfile[:-4], templatename)
-    #CG(inputfile[:-4], templatename,queryfile)
+    #CT(inputfile[:-4], templatename)
+    #CG(inputfile[:-4], templatename)
     #NG(inputfile[:-4],templatename,queryfile)
     #C_I(inputfile[:-4],templatename,queryfile)
     #IR(inputfile[:-4],templatename,queryfile)
-
+    RG(inputfile[:-4],templatename)
 #--------------------------- HOM ----------------------------#
     #STS(inputfile[:-4], templatename)
     #CTN(inputfile[:-4], templatename)
     #CSN(inputfile[:-4], templatename)
-    #RT(inputfile[:-4], templatename)
-    #DT(inputfile[:-4], templatename)
+    #RA(inputfile[:-4], templatename)
+    #DA(inputfile[:-4], templatename)
     #EIG(inputfile[:-4], templatename)
 
 def NewDir(i):
@@ -130,7 +137,6 @@ def CS(inp,tem):#change Source of transition
                 print 'name of source',nameofSource
                 for lo in locations:
                     newsource =lo.attrib['id']
-
                     if source!=newsource:
                         #print "source and new source are not the same", source, newsource
                 #       make a new copy of the tree, find the source and change it
@@ -166,7 +172,7 @@ def CS(inp,tem):#change Source of transition
 
                                 tree2.write(myMutation)
                                 if os.name == 'nt':
-                                    if CheckQuery(False, myMutation):
+                                    if CheckQuery(True, myMutation):
 
                                         Change_dir(myMutation, 'yes')
                                     else:
@@ -234,7 +240,7 @@ def CT(inp, tem):#change Target of transition
 
                                 tree2.write(myMutation)
                                 if os.name == 'nt':
-                                    if CheckQuery(False, myMutation):
+                                    if CheckQuery(True, myMutation):
 
                                         Change_dir(myMutation, 'yes')
                                     else:
@@ -245,13 +251,12 @@ def CT(inp, tem):#change Target of transition
     logger.info(te)
 
 
-
-
-
 def CN(inp,tem): # change output transition name
     i=0
     j=0
     # get the transitions in the target template
+    timerStart=datetime.datetime.now()
+    logger.info('CT started.')
     for temp in root.findall('template'):
         if temp.find('name').text==tem:
             listOfTransitions= []
@@ -295,6 +300,8 @@ def CN(inp,tem): # change output transition name
                                 if transitionText != listOfTransitions[ii] and listOfTransitions[ii]!= None: # checks whether the transition name is different that selected transition
                                     print(t.find("./transition/label[@kind='synchronisation']").text)#=listOfTransitions[ii]
                                     print ('tree is :',inp+'MUT_CN'+str(k)+'_'+str(ii)+'.xml')
+                                    #reachability setting
+                                    assignment =t.find("./tra)
                                     treex.write(inp+'MUT_CN'+str(k)+'_'+str(ii)+'.xml')
                                     i+=1
                                 #print MyName,'new tree is made for transitions',s.text
@@ -309,6 +316,10 @@ def CN(inp,tem): # change output transition name
                                 # #print MyName,'it is deleted'
                             else:
                                 os.remove(MyName)
+    timerStop = datetime.datetime.now()
+    te = timerStop - timerStart
+    logger.info('CT finnished.')
+    logger.info(te)
 
                             # else:
                             #     #print 'remove the unsync channels'
@@ -348,43 +359,109 @@ def CheckQuery(reachability, MyName):
         # print 'here is an error'
         return False
 
-#Change Guard
-def CG(inp,tem,que):
-    for t in root.findall('template'):
-        r =  [loc.attrib['id'] for loc in t.findall('location')]
-        h=0
-        for loc in t.findall('transition'):
-            x=loc.find("label[@kind='guard']")
-            if x!= None: h+=1
-
-        #print 'number of gurads:',h
-        ##print 'main temp', t.find('name').text
-        if t.find('name').text==tem:
-            # for ii in range(len(r)):
-            for k in range(h):
-                strin = 'transition['+str(k)+']'
-                MyName =inp+'MUT_CG'+str(k)+'_'+str(h)+'.xml'
+# Remove Guard
+def RG(inp, tem):
+    timerStart = datetime.datetime.now()
+    logger.info('RG started.')
+    for t in root.findall('template'):  # find all templates
+        if t.find('name').text == tem:  # find the template that we want
+            locations = [loc.attrib['id'] for loc in t.findall('location')]  # get the locations of the template
+            transitions = [tran for tran in t.findall('transition')]
+            print 'transitions', transitions
+            h = 0
+            #guardsList = t.findall("transition/label[@kind='guard']")
+            for k in range(len(transitions)):  # for each guard make a mutant and increase the value guard by +1
+                MyName = inp + 'MUT_RG' + str(k) + '_' + str(h) + '.xml'
                 tree.write(MyName)
                 treex = ET.parse(MyName)
                 rootx = treex.getroot()
-                for t in rootx.findall('template'):
-                    ##print 'inside temp', t.find('name').text
-                    if t.find('name').text=='Template':
-                        ##print strin
-                        strin = 'transition['+str(k)+']'
-                        tra = t.find(strin)
-                        ##print 'in Template and transition is',tra.find('label').tag
-                        x=tra.find("label[@kind='guard']")
-                        if x != None:
-                            #print x.text
-                            x.text='cl<=5'
+                for txx in rootx.findall('template'):
+                    if txx.find('name').text == tem:
+                        trn = txx.find("transition["+str(k)+"]")
+                        #guards = txx.findall("transition/label[@kind='guard']")
+                        #print 'guards:', guards
+                        # change the guard
+                        #guards[k].text += str('+1')
+                        g=trn.find("label[@kind='guard']")
+                        #element_guard=txx.find(".//label[@kind='guard']")
+                        if g!=None:
+                            print 'element',g
+                            trn.remove(g)
+                            print 'removed'
+                            #   reachability settings
+                            assignment = trn.find("label[@kind='assignment']")
+                            if assignment != None:
+                                assignment.text += ',\ntrap=true'
+                                # print "in the assignment setting- if"
+                            else:
+                                # ele = selectedTransition.find("transition[" + str(tr) + "]")
+                                assignmentAttrib = {"kind": "assignment", "x": "-20", "y": "-20"}
+                                item = ET.Element("label")
+                                item.text = "trap=true"
+                                item.attrib = assignmentAttrib
+                                trn.insert(3, item)
                             treex.write(MyName)
-                            if CheckQuery(MyName):
+                            if CheckQuery(True,MyName):
                                 Change_dir(MyName,'yes')
                             else:
                                 Change_dir(MyName,'no')
                         else:
                             os.remove(MyName)
+    timerStop = datetime.datetime.now()
+    te = timerStop - timerStart
+    logger.info('RG finnished.')
+    logger.info(te)
+
+
+
+#Change Guard
+def CG(inp,tem):
+    timerStart = datetime.datetime.now()
+    #logger.info('CG (+1) started.')
+    for t in root.findall('template'): # find all templates
+        if t.find('name').text==tem: # find the template that we want
+            locations = [loc.attrib['id'] for loc in t.findall('location')] # get the locations of the template
+            print 'locations', locations
+            h=0
+            guardsList= t.findall("transition/label[@kind='guard']")
+            for k in range(len(guardsList)): # for each guard make a mutant and increase the value guard by +1
+                    MyName =inp+'MUT_CG'+str(k)+'_'+str(h)+'.xml'
+                    tree.write(MyName)
+                    treex = ET.parse(MyName)
+                    rootx = treex.getroot()
+                    for txx in rootx.findall('template'):
+                        if txx.find('name').text==tem:
+                            guards=txx.findall("transition/label[@kind='guard']")
+                            print 'guards:', guards
+                            # change the guard
+                            guards[k].text+=str('+1')
+
+                            # reachability settings
+
+                            # assignment = transitionstest[tr].find("label[@kind='assignment']")
+                            # if assignment != None:
+                            #     assignment.text += ',\ntrap=true'
+                            #     # print "in the assignment setting- if"
+                            # else:
+                            #     # ele = selectedTransition.find("transition[" + str(tr) + "]")
+                            #     assignmentAttrib = {"kind": "assignment", "x": "-20", "y": "-20"}
+                            #     item = ET.Element("label")
+                            #     item.text = "trap=true"
+                            #     item.attrib = assignmentAttrib
+                            #     selectedTransition.insert(3, item)
+
+                            # treex.write(MyName)
+                            #
+                            #
+                            # if CheckQuery(True,MyName):
+                            #     Change_dir(MyName,'yes')
+                            # else:
+                            #     Change_dir(MyName,'no')
+
+    # timerStop = datetime.datetime.now()
+    # te = timerStop - timerStart
+    #logger.info('CG (+1) finnished.')
+    #logger.info(te)
 
 #Negate Gurad
 def NG(inp,tem,que):
@@ -767,10 +844,12 @@ def CSN(inp, tem):  # change source and  name
                                 Change_dir(MyName,'no')
                         i = i + 1
 
-#remove a transition
-def RT(inp, tem):
+#remove actions
+def RA(inp, tem):
     print '-------------------------------------------------------------------------'
-    print 'Mutation operator Remove Transition (RT) is started.'
+    print 'Mutation operator Remove Actions (RA) is started.'
+    timerStart=datetime.datetime.now()
+    logger.info('RA started.')
     #dec = root.find('declaration')
     #dec.text += '\nbool trap= false; // reachability of the mutation canbe checked by this boolean variable'
     t = root.find(".//template[name='" + str(tem) + "']")
@@ -779,10 +858,8 @@ def RT(inp, tem):
     #for l in range(len(listoflocations)):
     for transition in range(len(listoftransitions)):
                     # print 'l, trans, target', l, transition, source
-
         currTran = t.find(
             "transition[" + str(transition) + "]/label[@kind='synchronisation']")
-
         # create new file
         MyName = inp + 'MUT_RT' + str(transition) + '.xml'
         tree.write(MyName)
@@ -793,7 +870,6 @@ def RT(inp, tem):
         # delete transition
         el=tx.find("transition[" + str(
             transition) + "]")
-
         tx.remove(el)
 
         # check if they are correctly mutated
@@ -809,13 +885,19 @@ def RT(inp, tem):
                 Change_dir(MyName, 'yes')
             else:
                 Change_dir(MyName, 'no')
+    timerStop = datetime.datetime.now()
+    te = timerStop - timerStart
+    logger.info('RA finnished.')
+    logger.info(te)
 
 
-# duplicate a transition
-def DT(inp, tem):
+# duplicate actions
+def DA(inp, tem):
     print '-------------------------------------------------------------------------'
 
-    print 'Mutation operator Douplicate Transition (DT) is started.'
+    print 'Mutation operator Duplicate Actions (DA) is started.'
+    timerStart=datetime.datetime.now()
+    logger.info('DA started.')
     #dec = root.find('declaration')
     #dec.text += '\nbool trap= false; // reachability of the mutation canbe checked by this boolean variable'
     t = root.find(".//template[name='" + str(tem) + "']")
@@ -898,7 +980,10 @@ def DT(inp, tem):
                             Change_dir(MyName,'yes')
                         else:
                             Change_dir(MyName,'no')
-
+    timerStop = datetime.datetime.now()
+    te = timerStop - timerStart
+    logger.info('DA finnished.')
+    logger.info(te)
 
 
  # exchange invariant and guard
@@ -977,19 +1062,7 @@ def EIG(inp, tem):
                             os.remove(MyName)
 
 
-# NewDir()
-# CN()
-# CS()
-# CT()
-# CG()
-# NG()
-# CI()
-# SL()
-# IR()
-# CheckQuery()
 
-# current_path='\FSDT\Mutation_UPTA\mut_locations'
-# ChangeDIR()
 
 
 if __name__ == "__main__":

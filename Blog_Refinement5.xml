@@ -1,0 +1,2789 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_1.dtd'>
+<nta>
+	<declaration>//General variables which are used in all models
+int cu;
+int sa;
+int sc;
+int su;
+const int N=2;
+const int max_art=2;
+const int Users=2;
+
+int user_articles[2]; // number of articles that each user has - for M3 and M4
+
+chan add_ar,manage_ar, delete_ar,edit_ar, add_cmt, added_cmt,edit_cmt, edited_cmt,dele_cmt,deleted_cmt;
+chan added_ar,access_ar,deleted_ar, edited_ar, cancel,manage_cmt,access_cmt;//, read_art[N],readart[N];
+
+//M0
+
+
+//M1
+
+
+//M2 : 1 user, 1 reader, multiple article and multiple comments
+int articles[max_art];
+int comments[max_art][N]; 
+int numOfComInArt[N];
+
+
+//M3: 2 users, multiple article each user and 1 comment each article
+int article_array3[2][max_art]; // user.article
+int cmt_array3[2][max_art]; //user.article.comment 
+int numOfComInArt3[2][max_art];//user.article
+
+
+
+
+//M4: 2 users, 1ple article each user and multiple comments
+int article_array4[2]; // user.article
+int cmt_array4[2][2]; //user.comment 
+int numOfComInArt4[2];//number of comments in an art
+
+
+//M5: 2 users, muti article each user and multiple comments
+int article[2][max_art]; // user.article
+int Comment[2][max_art][2]; //user.comment 
+int numOfComInArticle[max_art][2];//number of comments in an art
+
+
+
+/*const int LenArt=2; // maximum number of articles for each user
+const int LenCmt =2;
+int  comments [2][LenArt][LenCmt];
+int len[LenArt];
+
+int article_list[2][LenArt];
+
+int cmtart[2][LenArt];*/
+bool trap=false;
+
+
+bool cmt,token, art;
+//int cmttoken1, cmttoken2;
+
+int cmt_array[2];
+int i=0;
+int j,c;
+//add comment
+void addcmt(){
+j=0;
+while(j&lt;2){
+if (cmt_array[j]==0) {
+                cmt_array[j]=cu+10;
+                i++;
+                j=2;// break the loop
+}
+j++;
+}
+}
+ // del comment
+void delcmt(int c){
+cmt_array[c]=0;
+i--;
+}
+
+
+//*********************************************************************************************************************************************************
+// add article
+/*void addart(){
+ if (article_list[cu][0]==0)  article_list[cu][0]=1;
+else if(article_list[cu][1]==0)  article_list[cu][1]=1;
+//else if(article_list[current_user][2]==0)  article_list[current_user][2]=1;
+len[cu]++;
+}
+
+//remove an article
+void delart(){
+article_list[su][sa]=0;
+cmtart[su][sa]=0;
+for(i=0;i&lt;LenCmt;i++){
+comments[su][sa][i]=0;
+}
+len[su]--;
+}*/
+
+</declaration>
+	<template>
+		<name x="5" y="5">SUT</name>
+		<declaration>// Place local declarations here.
+
+/*int i=0;
+
+// add article
+void artAdded(){
+ if (article_list[current_user][0]==0)  article_list[current_user][0]=1;
+else if(article_list[current_user][1]==0)  article_list[current_user][1]=1;
+//else if(article_list[current_user][2]==0)  article_list[current_user][2]=1;
+len[current_user]++;
+}
+
+//remove an article
+void artDel(){
+article_list[selected_user][selected_art]=0;
+cmtart[selected_user][selected_art]=0;
+for(i=0;i&lt;LenCmt;i++){
+comments[selected_user][selected_art][i]=0;
+}
+len[selected_user]--;
+}
+
+//add comment
+void cmtAdded(){
+if (comments[selected_user][selected_art][0]==0){comments[selected_user][selected_art][0]=current_user+10;
+cmtart[selected_user][selected_art]++;
+}
+else if (comments[selected_user][selected_art][1]==0){
+comments[selected_user][selected_art][1]=current_user+10;
+cmtart[selected_user][selected_art]++;}
+else if (comments[selected_user][selected_art][2]==0){
+comments[selected_user][selected_art][2]=current_user+10;
+cmtart[selected_user][selected_art]++;}
+//else if (comments[selected_user][selected_art][3]==0)comments[selected_user][selected_art][3]=e+10;
+//if(lencmt&lt;=LenCmt-1)lencmt++;
+
+}
+
+//delete comment
+void cmtdel(){
+comments[selected_user][selected_art][selected_comment]=0;
+cmtart[selected_user][selected_art]--;
+}*/
+</declaration>
+		<location id="id0" x="-4122" y="-4166">
+		</location>
+		<location id="id1" x="-4151" y="-4227">
+		</location>
+		<location id="id2" x="-4262" y="-4239">
+		</location>
+		<location id="id3" x="-4440" y="-4193">
+		</location>
+		<location id="id4" x="-4223" y="-3992">
+		</location>
+		<location id="id5" x="-4446" y="-4122">
+		</location>
+		<location id="id6" x="-4450" y="-3995">
+			<committed/>
+		</location>
+		<location id="id7" x="-4137" y="-4074">
+			<committed/>
+		</location>
+		<location id="id8" x="-4306" y="-4127">
+		</location>
+		<init ref="id8"/>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-4217" y="-4132">deleted_cmt!</label>
+			<nail x="-4131" y="-4096"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-4204" y="-4153">dele_cmt?</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-4159" y="-4198">edited_cmt!</label>
+			<nail x="-4131" y="-4187"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-4224" y="-4207">edit_cmt?</label>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-4242" y="-4260">access_cmt!</label>
+			<nail x="-4193" y="-4236"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="-4329" y="-4223">manage_cmt?</label>
+			<nail x="-4306" y="-4243"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-4417" y="-4219">added_cmt!</label>
+			<nail x="-4349" y="-4195"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-4449" y="-4172">add_cmt?</label>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-4196" y="-4013">edited_ar!</label>
+			<nail x="-4186" y="-4025"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-4260" y="-4034">edit_ar?</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-4424" y="-4143">deleted_ar!</label>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="-4428" y="-4116">delete_ar?</label>
+			<nail x="-4354" y="-4096"/>
+			<nail x="-4445" y="-4092"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-4314" y="-4038">cancel?</label>
+			<nail x="-4320" y="-4036"/>
+			<nail x="-4280" y="-4035"/>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-4444" y="-4068">access_ar!</label>
+			<nail x="-4451" y="-4034"/>
+			<nail x="-4450" y="-4064"/>
+			<nail x="-4347" y="-4069"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="-4440" y="-4020">manage_ar?</label>
+			<nail x="-4360" y="-3995"/>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-4199" y="-4053">added_ar!</label>
+			<nail x="-4163" y="-4026"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="-4209" y="-4095">add_ar?</label>
+		</transition>
+	</template>
+	<template>
+		<name>SUT1</name>
+		<location id="id9" x="-3952" y="-3992">
+			<committed/>
+		</location>
+		<location id="id10" x="-3954" y="-4095">
+			<committed/>
+		</location>
+		<location id="id11" x="-4114" y="-4096">
+			<committed/>
+		</location>
+		<location id="id12" x="-4293" y="-4095">
+			<committed/>
+		</location>
+		<location id="id13" x="-3987" y="-3871">
+			<committed/>
+		</location>
+		<location id="id14" x="-4285" y="-3991">
+			<committed/>
+		</location>
+		<location id="id15" x="-4293" y="-3890">
+			<committed/>
+		</location>
+		<location id="id16" x="-3951" y="-3940">
+			<committed/>
+		</location>
+		<location id="id17" x="-4145" y="-3992">
+		</location>
+		<init ref="id17"/>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id17"/>
+			<label kind="synchronisation" x="-4046" y="-3989">deleted_cmt!</label>
+			<nail x="-3953" y="-3967"/>
+			<nail x="-4039" y="-3967"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id9"/>
+			<label kind="guard" x="-4093" y="-4026">cmt_array[c]==cu+10 || cu==0</label>
+			<label kind="synchronisation" x="-4043" y="-4012">dele_cmt?</label>
+			<label kind="comments" x="-3902" y="-4027">checks whether the user is the owner.
+'s' can be 0 (User) or 1 (Reader). 
+To make sure that 0 does not mistaken with null, 
+in the cmt_array I add the userid+10.
+So, the value of cmt_array when is empty(null)is 0, 
+otherwise is 10 (userid 0 +10)or 11.</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id17"/>
+			<label kind="synchronisation" x="-4036" y="-4072">edited_cmt!</label>
+			<nail x="-3954" y="-4051"/>
+			<nail x="-4019" y="-4051"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id10"/>
+			<label kind="guard" x="-4045" y="-4138">cmt_array[c]==cu+10</label>
+			<label kind="synchronisation" x="-4024" y="-4093">edit_cmt?</label>
+			<nail x="-4015" y="-4095"/>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id17"/>
+			<label kind="synchronisation" x="-4096" y="-4115">access_cmt!</label>
+			<nail x="-4048" y="-4095"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id11"/>
+			<label kind="synchronisation" x="-4186" y="-4088">manage_cmt?</label>
+			<nail x="-4198" y="-4096"/>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id17"/>
+			<label kind="synchronisation" x="-4275" y="-4117">added_cmt!</label>
+			<nail x="-4208" y="-4095"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id12"/>
+			<label kind="synchronisation" x="-4275" y="-4085">add_cmt?</label>
+			<nail x="-4211" y="-4064"/>
+			<nail x="-4294" y="-4064"/>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id17"/>
+			<label kind="synchronisation" x="-4076" y="-3893">edited_ar!</label>
+			<nail x="-4080" y="-3871"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id13"/>
+			<label kind="guard" x="-4089" y="-3936">cu==0</label>
+			<label kind="synchronisation" x="-4081" y="-3923">edit_ar?</label>
+			<label kind="comments" x="-3963" y="-3893">Current user is the owner of the article.</label>
+			<nail x="-4085" y="-3905"/>
+			<nail x="-4027" y="-3905"/>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id17"/>
+			<label kind="synchronisation" x="-4265" y="-4014">deleted_ar!</label>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id14"/>
+			<label kind="guard" x="-4268" y="-4055">cu==0</label>
+			<label kind="synchronisation" x="-4267" y="-4044">delete_ar?</label>
+			<label kind="comments" x="-4499" y="-4051">CurrentUser is the owner of article.</label>
+			<nail x="-4192" y="-4022"/>
+			<nail x="-4286" y="-4021"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id17"/>
+			<label kind="synchronisation" x="-4153" y="-3896">cancel?</label>
+			<nail x="-4159" y="-3894"/>
+			<nail x="-4119" y="-3893"/>
+		</transition>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id17"/>
+			<label kind="synchronisation" x="-4282" y="-3955">access_ar!</label>
+			<nail x="-4292" y="-3932"/>
+			<nail x="-4293" y="-3934"/>
+			<nail x="-4186" y="-3934"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id15"/>
+			<label kind="synchronisation" x="-4273" y="-3915">manage_ar?</label>
+			<nail x="-4195" y="-3890"/>
+		</transition>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id17"/>
+			<label kind="synchronisation" x="-4022" y="-3930">added_ar!</label>
+			<nail x="-3950" y="-3906"/>
+			<nail x="-4008" y="-3906"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id16"/>
+			<label kind="synchronisation" x="-4027" y="-3962">add_ar?</label>
+			<nail x="-4034" y="-3940"/>
+		</transition>
+	</template>
+	<template>
+		<name>SUT2</name>
+		<declaration>
+
+//******************************************************** M2: 1 user, 1 reader, multiple articles, multiple comments ***********************************
+ 
+// add article for multiple articles in M2
+//since we have only one user who is the owner of all articles, then we need to only have a 1-D array
+void addart2(){
+ if (articles[0]==0)  articles[0]=1;
+else if(articles[1]==0)  articles[1]=1;
+i++; // total number of articled is incearse by one
+}
+//remove an article
+void delart2(){
+articles[sa]=0; // delete the article
+for(i=0;i&lt;N;i++){ //delete all comments of that article
+comments[sa][i]=0;  
+}
+i--; //total number of articled is decreased by one
+numOfComInArt[sa]=0;
+}
+//add comment
+void addcmt2(){
+j=0;
+while(j&lt;N){
+if (comments[sa][j]==0) {
+                comments[sa][j]=cu+10;
+                numOfComInArt[sa]++;
+                j=2;// break the loop
+}
+j++;
+}
+}
+ // del comment
+void delcmt2(int c){
+comments[sa][c]=0;
+numOfComInArt[sa]--;
+}</declaration>
+		<location id="id18" x="-3952" y="-3992">
+			<committed/>
+		</location>
+		<location id="id19" x="-3954" y="-4095">
+			<committed/>
+		</location>
+		<location id="id20" x="-4114" y="-4096">
+			<committed/>
+		</location>
+		<location id="id21" x="-4293" y="-4095">
+			<committed/>
+		</location>
+		<location id="id22" x="-3987" y="-3858">
+			<committed/>
+		</location>
+		<location id="id23" x="-4285" y="-3991">
+			<committed/>
+		</location>
+		<location id="id24" x="-4293" y="-3877">
+			<committed/>
+		</location>
+		<location id="id25" x="-3951" y="-3927">
+			<committed/>
+		</location>
+		<location id="id26" x="-4145" y="-3992">
+		</location>
+		<init ref="id26"/>
+		<transition>
+			<source ref="id18"/>
+			<target ref="id26"/>
+			<label kind="synchronisation" x="-4046" y="-3989">deleted_cmt!</label>
+			<label kind="assignment" x="-4021" y="-3967">delcmt2(c)</label>
+			<nail x="-3953" y="-3967"/>
+			<nail x="-4039" y="-3967"/>
+		</transition>
+		<transition>
+			<source ref="id26"/>
+			<target ref="id18"/>
+			<label kind="guard" x="-4084" y="-4026">comments[sa][c]==cu+10 || cu==0</label>
+			<label kind="synchronisation" x="-4043" y="-4012">dele_cmt?</label>
+			<label kind="comments" x="-3902" y="-4027">checks whether the user is the owner.
+'s' can be 0 (User) or 1 (Reader). 
+To make sure that 0 does not mistaken with null, 
+in the cmt_array I add the userid+10.
+So, the value of cmt_array when is empty(null)is 0, 
+otherwise is 10 (userid 0 +10)or 11.</label>
+		</transition>
+		<transition>
+			<source ref="id19"/>
+			<target ref="id26"/>
+			<label kind="synchronisation" x="-4036" y="-4072">edited_cmt!</label>
+			<nail x="-3954" y="-4051"/>
+			<nail x="-4019" y="-4051"/>
+		</transition>
+		<transition>
+			<source ref="id26"/>
+			<target ref="id19"/>
+			<label kind="guard" x="-4045" y="-4138">comments[sa][c]==cu+10</label>
+			<label kind="synchronisation" x="-4024" y="-4093">edit_cmt?</label>
+			<nail x="-4015" y="-4095"/>
+		</transition>
+		<transition>
+			<source ref="id20"/>
+			<target ref="id26"/>
+			<label kind="synchronisation" x="-4096" y="-4115">access_cmt!</label>
+			<nail x="-4048" y="-4095"/>
+		</transition>
+		<transition>
+			<source ref="id26"/>
+			<target ref="id20"/>
+			<label kind="synchronisation" x="-4186" y="-4088">manage_cmt?</label>
+			<nail x="-4198" y="-4096"/>
+		</transition>
+		<transition>
+			<source ref="id21"/>
+			<target ref="id26"/>
+			<label kind="synchronisation" x="-4273" y="-4141">added_cmt!</label>
+			<label kind="assignment" x="-4276" y="-4119">addcmt2()</label>
+			<nail x="-4208" y="-4095"/>
+		</transition>
+		<transition>
+			<source ref="id26"/>
+			<target ref="id21"/>
+			<label kind="synchronisation" x="-4275" y="-4085">add_cmt?</label>
+			<nail x="-4211" y="-4064"/>
+			<nail x="-4294" y="-4064"/>
+		</transition>
+		<transition>
+			<source ref="id22"/>
+			<target ref="id26"/>
+			<label kind="synchronisation" x="-4076" y="-3880">edited_ar!</label>
+			<nail x="-4080" y="-3858"/>
+		</transition>
+		<transition>
+			<source ref="id26"/>
+			<target ref="id22"/>
+			<label kind="guard" x="-4084" y="-3922">cu==su</label>
+			<label kind="synchronisation" x="-4081" y="-3910">edit_ar?</label>
+			<label kind="comments" x="-3963" y="-3893">Current user is the owner of the article.</label>
+			<nail x="-4085" y="-3892"/>
+			<nail x="-4027" y="-3892"/>
+		</transition>
+		<transition>
+			<source ref="id23"/>
+			<target ref="id26"/>
+			<label kind="synchronisation" x="-4265" y="-4014">deleted_ar!</label>
+			<label kind="assignment" x="-4267" y="-3991">delart2()</label>
+		</transition>
+		<transition>
+			<source ref="id26"/>
+			<target ref="id23"/>
+			<label kind="guard" x="-4268" y="-4055">cu==su</label>
+			<label kind="synchronisation" x="-4267" y="-4044">delete_ar?</label>
+			<label kind="comments" x="-4499" y="-4051">CurrentUser is the owner of article.</label>
+			<nail x="-4192" y="-4022"/>
+			<nail x="-4286" y="-4021"/>
+		</transition>
+		<transition>
+			<source ref="id26"/>
+			<target ref="id26"/>
+			<label kind="synchronisation" x="-4153" y="-3883">cancel?</label>
+			<nail x="-4159" y="-3881"/>
+			<nail x="-4119" y="-3880"/>
+		</transition>
+		<transition>
+			<source ref="id24"/>
+			<target ref="id26"/>
+			<label kind="synchronisation" x="-4282" y="-3942">access_ar!</label>
+			<nail x="-4292" y="-3919"/>
+			<nail x="-4293" y="-3921"/>
+			<nail x="-4186" y="-3921"/>
+		</transition>
+		<transition>
+			<source ref="id26"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="-4273" y="-3902">manage_ar?</label>
+			<nail x="-4195" y="-3877"/>
+		</transition>
+		<transition>
+			<source ref="id25"/>
+			<target ref="id26"/>
+			<label kind="synchronisation" x="-4022" y="-3917">added_ar!</label>
+			<label kind="assignment" x="-4006" y="-3894">addart2()</label>
+			<nail x="-3950" y="-3893"/>
+			<nail x="-4008" y="-3893"/>
+		</transition>
+		<transition>
+			<source ref="id26"/>
+			<target ref="id25"/>
+			<label kind="synchronisation" x="-4026" y="-3947">add_ar?</label>
+			<nail x="-4034" y="-3927"/>
+		</transition>
+	</template>
+	<template>
+		<name>SUT3</name>
+		<declaration>
+
+//******************************************************** M3: 1 ueser, 1 reader  , 1 article , multiple comments ***********************************
+ 
+// add article for multiple articles in M3
+//since we have 2 user who is the owner of all articles, then we need a 2-D array to see who is  owner of an article
+void addart3(){
+ if (article_array3[cu][0]==0)  article_array3[cu][0]=1;
+else if(article_array3[cu][1]==0)  article_array3[cu][1]=1;
+user_articles[cu]++; // total number of articled is incearse by one
+}
+//remove an article
+void delart3(){
+article_array3[cu][sa]=0; // delete the article
+for(i=0;i&lt;N;i++){ //delete all comments of that article
+cmt_array3[cu][sa]=0;  
+}
+user_articles[cu]--; //total number of articled is decreased by one
+numOfComInArt3[su][sa]=0;
+}
+//add comment
+void addcmt3(){
+j=0;
+while(j&lt;N){
+if (cmt_array3[su][j]==0) {
+                cmt_array3[su][j]=cu+10;
+                numOfComInArt3[su][j]++;
+                j=2;// break the loop
+}
+j++;
+}
+}
+ // del comment
+void delcmt3(int c){
+cmt_array3[su][c]=0;
+numOfComInArt3[su][c]--;
+}</declaration>
+		<location id="id27" x="-3952" y="-3992">
+			<committed/>
+		</location>
+		<location id="id28" x="-4114" y="-4096">
+			<committed/>
+		</location>
+		<location id="id29" x="-4293" y="-4095">
+			<committed/>
+		</location>
+		<location id="id30" x="-4285" y="-3991">
+			<committed/>
+		</location>
+		<location id="id31" x="-4293" y="-3877">
+			<committed/>
+		</location>
+		<location id="id32" x="-3951" y="-3927">
+			<committed/>
+		</location>
+		<location id="id33" x="-4145" y="-3992">
+		</location>
+		<init ref="id33"/>
+		<transition>
+			<source ref="id27"/>
+			<target ref="id33"/>
+			<label kind="synchronisation" x="-4046" y="-3989">deleted_cmt!</label>
+			<label kind="assignment" x="-4021" y="-3967">delcmt3(sa)</label>
+			<nail x="-3953" y="-3967"/>
+			<nail x="-4039" y="-3967"/>
+		</transition>
+		<transition>
+			<source ref="id33"/>
+			<target ref="id27"/>
+			<label kind="guard" x="-4093" y="-4026">cmt_array3[su][sa]==cu+10 || cu==su</label>
+			<label kind="synchronisation" x="-4043" y="-4012">dele_cmt?</label>
+			<label kind="comments" x="-3815" y="-4021">checks whether the user is the owner.
+'s' can be 0 (User) or 1 (Reader). 
+To make sure that 0 does not mistaken with null, 
+in the cmt_array I add the userid+10.
+So, the value of cmt_array when is empty(null)is 0, 
+otherwise is 10 (userid 0 +10)or 11.</label>
+		</transition>
+		<transition>
+			<source ref="id28"/>
+			<target ref="id33"/>
+			<label kind="synchronisation" x="-4096" y="-4115">access_cmt!</label>
+			<nail x="-4048" y="-4095"/>
+		</transition>
+		<transition>
+			<source ref="id33"/>
+			<target ref="id28"/>
+			<label kind="synchronisation" x="-4186" y="-4088">manage_cmt?</label>
+			<nail x="-4198" y="-4096"/>
+		</transition>
+		<transition>
+			<source ref="id29"/>
+			<target ref="id33"/>
+			<label kind="synchronisation" x="-4273" y="-4141">added_cmt!</label>
+			<label kind="assignment" x="-4276" y="-4119">addcmt3()</label>
+			<nail x="-4208" y="-4095"/>
+		</transition>
+		<transition>
+			<source ref="id33"/>
+			<target ref="id29"/>
+			<label kind="synchronisation" x="-4275" y="-4085">add_cmt?</label>
+			<nail x="-4211" y="-4064"/>
+			<nail x="-4294" y="-4064"/>
+		</transition>
+		<transition>
+			<source ref="id30"/>
+			<target ref="id33"/>
+			<label kind="synchronisation" x="-4265" y="-4014">deleted_ar!</label>
+			<label kind="assignment" x="-4267" y="-3991">delart3()</label>
+		</transition>
+		<transition>
+			<source ref="id33"/>
+			<target ref="id30"/>
+			<label kind="guard" x="-4268" y="-4055">cu==su</label>
+			<label kind="synchronisation" x="-4267" y="-4044">delete_ar?</label>
+			<label kind="comments" x="-4499" y="-4051">CurrentUser is the owner of article.</label>
+			<nail x="-4192" y="-4022"/>
+			<nail x="-4286" y="-4021"/>
+		</transition>
+		<transition>
+			<source ref="id33"/>
+			<target ref="id33"/>
+			<label kind="synchronisation" x="-4153" y="-3883">cancel?</label>
+			<nail x="-4159" y="-3881"/>
+			<nail x="-4119" y="-3880"/>
+		</transition>
+		<transition>
+			<source ref="id31"/>
+			<target ref="id33"/>
+			<label kind="synchronisation" x="-4282" y="-3942">access_ar!</label>
+			<nail x="-4292" y="-3919"/>
+			<nail x="-4293" y="-3921"/>
+			<nail x="-4186" y="-3921"/>
+		</transition>
+		<transition>
+			<source ref="id33"/>
+			<target ref="id31"/>
+			<label kind="synchronisation" x="-4273" y="-3902">manage_ar?</label>
+			<nail x="-4195" y="-3877"/>
+		</transition>
+		<transition>
+			<source ref="id32"/>
+			<target ref="id33"/>
+			<label kind="synchronisation" x="-4022" y="-3917">added_ar!</label>
+			<label kind="assignment" x="-4006" y="-3894">addart3()</label>
+			<nail x="-3950" y="-3893"/>
+			<nail x="-4008" y="-3893"/>
+		</transition>
+		<transition>
+			<source ref="id33"/>
+			<target ref="id32"/>
+			<label kind="synchronisation" x="-4026" y="-3947">add_ar?</label>
+			<nail x="-4034" y="-3927"/>
+		</transition>
+	</template>
+	<template>
+		<name>SUT4</name>
+		<declaration>
+
+//******************************************************** M4: 2 users , multiple articles(each user 1 article), multiple comments ***********************************
+ 
+// add article for multiple articles in M3
+//since we have 2 user who is the owner of all articles, then we need a 2-D array to see who is  owner of an article
+void addart4(){
+ if (article_array4[cu]==0)  article_array4[cu]=1;
+//else if(article_array4[cu][1]==0)  article_array4[cu][1]=1;
+user_articles[cu]++; // total number of articled is incearse by one
+}
+//remove an article
+void delart4(){
+article_array4[cu]=0; // delete the article
+for(i=0;i&lt;N;i++){ //delete all comments of that article
+cmt_array4[cu][i]=0;  
+}
+user_articles[cu]--; //total number of articled is decreased by one
+numOfComInArt4[su]=0;
+}
+//add comment
+void addcmt4(){
+j=0;
+while(j&lt;N){
+if (cmt_array4[su][j]==0) {
+                cmt_array4[su][j]=cu+10;
+                numOfComInArt4[su]++;
+                j=2;// break the loop
+}
+j++;
+}
+}
+ // del comment
+void delcmt4(int sc){
+cmt_array4[su][sc]=0;
+numOfComInArt4[su]--;
+}</declaration>
+		<location id="id34" x="-3952" y="-3992">
+			<committed/>
+		</location>
+		<location id="id35" x="-4114" y="-4096">
+			<committed/>
+		</location>
+		<location id="id36" x="-4293" y="-4095">
+			<committed/>
+		</location>
+		<location id="id37" x="-4285" y="-3991">
+			<committed/>
+		</location>
+		<location id="id38" x="-4293" y="-3877">
+			<committed/>
+		</location>
+		<location id="id39" x="-3951" y="-3927">
+			<committed/>
+		</location>
+		<location id="id40" x="-4145" y="-3992">
+		</location>
+		<init ref="id40"/>
+		<transition>
+			<source ref="id34"/>
+			<target ref="id40"/>
+			<label kind="synchronisation" x="-4046" y="-3989">deleted_cmt!</label>
+			<label kind="assignment" x="-4021" y="-3967">delcmt4(sc)</label>
+			<nail x="-3953" y="-3967"/>
+			<nail x="-4039" y="-3967"/>
+		</transition>
+		<transition>
+			<source ref="id40"/>
+			<target ref="id34"/>
+			<label kind="guard" x="-4093" y="-4026">cmt_array4[su][sc]==cu+10 || cu==su</label>
+			<label kind="synchronisation" x="-4043" y="-4012">dele_cmt?</label>
+			<label kind="comments" x="-3815" y="-4021">checks whether the user is the owner.
+'s' can be 0 (User) or 1 (Reader). 
+To make sure that 0 does not mistaken with null, 
+in the cmt_array I add the userid+10.
+So, the value of cmt_array when is empty(null)is 0, 
+otherwise is 10 (userid 0 +10)or 11.</label>
+		</transition>
+		<transition>
+			<source ref="id35"/>
+			<target ref="id40"/>
+			<label kind="synchronisation" x="-4096" y="-4115">access_cmt!</label>
+			<nail x="-4048" y="-4095"/>
+		</transition>
+		<transition>
+			<source ref="id40"/>
+			<target ref="id35"/>
+			<label kind="synchronisation" x="-4186" y="-4088">manage_cmt?</label>
+			<nail x="-4198" y="-4096"/>
+		</transition>
+		<transition>
+			<source ref="id36"/>
+			<target ref="id40"/>
+			<label kind="synchronisation" x="-4273" y="-4141">added_cmt!</label>
+			<label kind="assignment" x="-4276" y="-4119">addcmt4()</label>
+			<nail x="-4208" y="-4095"/>
+		</transition>
+		<transition>
+			<source ref="id40"/>
+			<target ref="id36"/>
+			<label kind="synchronisation" x="-4275" y="-4085">add_cmt?</label>
+			<nail x="-4211" y="-4064"/>
+			<nail x="-4294" y="-4064"/>
+		</transition>
+		<transition>
+			<source ref="id37"/>
+			<target ref="id40"/>
+			<label kind="synchronisation" x="-4265" y="-4014">deleted_ar!</label>
+			<label kind="assignment" x="-4267" y="-3991">delart4()</label>
+		</transition>
+		<transition>
+			<source ref="id40"/>
+			<target ref="id37"/>
+			<label kind="guard" x="-4268" y="-4055">cu==su</label>
+			<label kind="synchronisation" x="-4267" y="-4044">delete_ar?</label>
+			<label kind="comments" x="-4499" y="-4051">CurrentUser is the owner of article.</label>
+			<nail x="-4192" y="-4022"/>
+			<nail x="-4286" y="-4021"/>
+		</transition>
+		<transition>
+			<source ref="id40"/>
+			<target ref="id40"/>
+			<label kind="synchronisation" x="-4153" y="-3883">cancel?</label>
+			<nail x="-4159" y="-3881"/>
+			<nail x="-4119" y="-3880"/>
+		</transition>
+		<transition>
+			<source ref="id38"/>
+			<target ref="id40"/>
+			<label kind="synchronisation" x="-4282" y="-3942">access_ar!</label>
+			<nail x="-4292" y="-3919"/>
+			<nail x="-4293" y="-3921"/>
+			<nail x="-4186" y="-3921"/>
+		</transition>
+		<transition>
+			<source ref="id40"/>
+			<target ref="id38"/>
+			<label kind="synchronisation" x="-4273" y="-3902">manage_ar?</label>
+			<nail x="-4195" y="-3877"/>
+		</transition>
+		<transition>
+			<source ref="id39"/>
+			<target ref="id40"/>
+			<label kind="synchronisation" x="-4022" y="-3917">added_ar!</label>
+			<label kind="assignment" x="-4006" y="-3894">addart4()</label>
+			<nail x="-3950" y="-3893"/>
+			<nail x="-4008" y="-3893"/>
+		</transition>
+		<transition>
+			<source ref="id40"/>
+			<target ref="id39"/>
+			<label kind="synchronisation" x="-4026" y="-3947">add_ar?</label>
+			<nail x="-4034" y="-3927"/>
+		</transition>
+	</template>
+	<template>
+		<name>SUT5</name>
+		<declaration>
+//******************************************************** M5: 2 users , multiple articles, multiple comments ***********************************
+ 
+// add article for multiple articles in M3
+//since we have 2 user who is the owner of all articles, then we need a 2-D array to see who is  owner of an article
+void addart5(){
+ if (article[cu][0]==0)  article[cu][0]=1;
+else if(article[cu][1]==0)  article[cu][1]=1;
+user_articles[cu]++; // total number of articled is incearse by one
+}
+//remove an article
+void delart5(){
+article[su][sa]=0; // delete the article
+for(i=0;i&lt;N;i++){ //delete all comments of that article
+Comment[su][sa][i]=0;  
+}
+user_articles[cu]--; //total number of articled is decreased by one
+numOfComInArticle[su][sa]=0;
+}
+//add comment
+void addcmt5(){
+j=0;
+while(j&lt;N){
+if (Comment[su][sa][j]==0) {
+               Comment[su][sa][j]=cu+10;
+                numOfComInArticle[su][sa]++;
+                j=2;// break the loop
+}
+j++;
+}
+}
+ // del comment
+void delcmt5(){
+Comment[su][sa][sc]=0;
+numOfComInArticle[su][sa]--;
+}</declaration>
+		<location id="id41" x="-3977" y="-3869">
+		</location>
+		<location id="id42" x="-3955" y="-4060">
+		</location>
+		<location id="id43" x="-3893" y="-3991">
+			<committed/>
+		</location>
+		<location id="id44" x="-4137" y="-4097">
+			<committed/>
+		</location>
+		<location id="id45" x="-4320" y="-4094">
+			<committed/>
+		</location>
+		<location id="id46" x="-4312" y="-3990">
+			<committed/>
+		</location>
+		<location id="id47" x="-4320" y="-3876">
+			<committed/>
+		</location>
+		<location id="id48" x="-3892" y="-3926">
+			<committed/>
+		</location>
+		<location id="id49" x="-4145" y="-3992">
+		</location>
+		<init ref="id49"/>
+		<transition>
+			<source ref="id47"/>
+			<target ref="id49"/>
+			<label kind="synchronisation" x="-4302" y="-3951">access_ar!</label>
+			<nail x="-4318" y="-3929"/>
+			<nail x="-4218" y="-3932"/>
+		</transition>
+		<transition>
+			<source ref="id41"/>
+			<target ref="id49"/>
+			<label kind="synchronisation" x="-4083" y="-3902">edited_ar!</label>
+		</transition>
+		<transition>
+			<source ref="id49"/>
+			<target ref="id41"/>
+			<label kind="guard" x="-4083" y="-3869">su==cu</label>
+			<label kind="synchronisation" x="-4086" y="-3854">edited_ar?</label>
+			<nail x="-4089" y="-3869"/>
+		</transition>
+		<transition>
+			<source ref="id42"/>
+			<target ref="id49"/>
+			<label kind="synchronisation" x="-4045" y="-4057">edited_cmt!</label>
+			<nail x="-3955" y="-4037"/>
+			<nail x="-4057" y="-4037"/>
+		</transition>
+		<transition>
+			<source ref="id49"/>
+			<target ref="id42"/>
+			<label kind="guard" x="-4025" y="-4115">Comment[su][sa][sc]==cu+10</label>
+			<label kind="synchronisation" x="-4025" y="-4097">edit_cmt?</label>
+			<nail x="-4038" y="-4094"/>
+			<nail x="-3958" y="-4094"/>
+		</transition>
+		<transition>
+			<source ref="id43"/>
+			<target ref="id49"/>
+			<label kind="synchronisation" x="-3982" y="-3973">deleted_cmt!</label>
+			<label kind="assignment" x="-3971" y="-3958">delcmt5()</label>
+			<nail x="-3894" y="-3953"/>
+			<nail x="-3980" y="-3953"/>
+		</transition>
+		<transition>
+			<source ref="id49"/>
+			<target ref="id43"/>
+			<label kind="guard" x="-4086" y="-4026">Comment[su][sa][sc]==cu+10 || cu==su</label>
+			<label kind="synchronisation" x="-4086" y="-4013">dele_cmt?</label>
+			<label kind="comments" x="-3771" y="-4017">checks whether the user is the owner.
+'s' can be 0 (User) or 1 (Reader). 
+To make sure that 0 does not mistaken with null, 
+in the cmt_array I add the userid+10.
+So, the value of cmt_array when is empty(null)is 0, 
+otherwise is 10 (userid 0 +10)or 11.</label>
+		</transition>
+		<transition>
+			<source ref="id44"/>
+			<target ref="id49"/>
+			<label kind="synchronisation" x="-4121" y="-4119">access_cmt!</label>
+			<nail x="-4056" y="-4096"/>
+		</transition>
+		<transition>
+			<source ref="id49"/>
+			<target ref="id44"/>
+			<label kind="synchronisation" x="-4185" y="-4087">manage_cmt?</label>
+			<nail x="-4198" y="-4096"/>
+		</transition>
+		<transition>
+			<source ref="id45"/>
+			<target ref="id49"/>
+			<label kind="synchronisation" x="-4273" y="-4141">added_cmt!</label>
+			<label kind="assignment" x="-4276" y="-4119">addcmt5()</label>
+			<nail x="-4208" y="-4095"/>
+		</transition>
+		<transition>
+			<source ref="id49"/>
+			<target ref="id45"/>
+			<label kind="synchronisation" x="-4275" y="-4085">add_cmt?</label>
+			<nail x="-4211" y="-4064"/>
+			<nail x="-4321" y="-4063"/>
+		</transition>
+		<transition>
+			<source ref="id46"/>
+			<target ref="id49"/>
+			<label kind="synchronisation" x="-4265" y="-4014">deleted_ar!</label>
+			<label kind="assignment" x="-4267" y="-3991">delart5()</label>
+		</transition>
+		<transition>
+			<source ref="id49"/>
+			<target ref="id46"/>
+			<label kind="guard" x="-4266" y="-4058">cu==su</label>
+			<label kind="synchronisation" x="-4267" y="-4044">delete_ar?</label>
+			<label kind="comments" x="-4499" y="-4051">CurrentUser is the owner of article.</label>
+			<nail x="-4192" y="-4022"/>
+			<nail x="-4313" y="-4020"/>
+		</transition>
+		<transition>
+			<source ref="id49"/>
+			<target ref="id49"/>
+			<label kind="synchronisation" x="-4153" y="-3883">cancel?</label>
+			<nail x="-4159" y="-3881"/>
+			<nail x="-4119" y="-3880"/>
+		</transition>
+		<transition>
+			<source ref="id49"/>
+			<target ref="id47"/>
+			<label kind="synchronisation" x="-4273" y="-3902">manage_ar?</label>
+			<nail x="-4195" y="-3877"/>
+		</transition>
+		<transition>
+			<source ref="id48"/>
+			<target ref="id49"/>
+			<label kind="synchronisation" x="-3960" y="-3903">added_ar!</label>
+			<label kind="assignment" x="-3949" y="-3889">addart5()</label>
+			<nail x="-3889" y="-3866"/>
+			<nail x="-3942" y="-3867"/>
+		</transition>
+		<transition>
+			<source ref="id49"/>
+			<target ref="id48"/>
+			<label kind="synchronisation" x="-3962" y="-3929">add_ar?</label>
+			<nail x="-3975" y="-3926"/>
+		</transition>
+	</template>
+	<template>
+		<name>M0_u1</name>
+		<declaration>// single user, adding single article and single comment
+</declaration>
+		<location id="id50" x="-375" y="-83">
+		</location>
+		<location id="id51" x="-476" y="-81">
+		</location>
+		<location id="id52" x="-372" y="30">
+		</location>
+		<location id="id53" x="-372" y="56">
+		</location>
+		<location id="id54" x="-474" y="-9">
+		</location>
+		<location id="id55" x="-373" y="-11">
+		</location>
+		<location id="id56" x="-146" y="-84">
+		</location>
+		<location id="id57" x="-262" y="-119">
+		</location>
+		<location id="id58" x="-138" y="56">
+		</location>
+		<location id="id59" x="-52" y="-8">
+			<committed/>
+		</location>
+		<location id="id60" x="-145" y="-11">
+		</location>
+		<location id="id61" x="-256" y="-10">
+		</location>
+		<init ref="id51"/>
+		<transition>
+			<source ref="id50"/>
+			<target ref="id61"/>
+			<label kind="synchronisation" x="-356" y="-88">added_ar?</label>
+			<label kind="assignment" x="-351" y="-74">art =1</label>
+			<nail x="-283" y="-84"/>
+		</transition>
+		<transition>
+			<source ref="id51"/>
+			<target ref="id50"/>
+			<label kind="synchronisation" x="-452" y="-86">add_ar!</label>
+		</transition>
+		<transition>
+			<source ref="id52"/>
+			<target ref="id61"/>
+			<label kind="synchronisation" x="-357" y="3">deleted_cmt?</label>
+			<label kind="assignment" x="-354" y="29">cmt=0</label>
+			<nail x="-276" y="31"/>
+		</transition>
+		<transition>
+			<source ref="id54"/>
+			<target ref="id52"/>
+			<label kind="synchronisation" x="-452" y="7">dele_cmt!</label>
+			<nail x="-452" y="32"/>
+		</transition>
+		<transition>
+			<source ref="id54"/>
+			<target ref="id61"/>
+			<label kind="synchronisation" x="-392" y="-51">cancel!</label>
+			<nail x="-454" y="-47"/>
+			<nail x="-298" y="-50"/>
+		</transition>
+		<transition color="#a9a9a9">
+			<source ref="id53"/>
+			<target ref="id61"/>
+			<label kind="synchronisation" x="-353" y="57">edited_cmt?</label>
+			<nail x="-275" y="57"/>
+		</transition>
+		<transition color="#a9a9a9">
+			<source ref="id54"/>
+			<target ref="id53"/>
+			<label kind="synchronisation" x="-447" y="57">edit_cmt!</label>
+			<nail x="-455" y="57"/>
+		</transition>
+		<transition>
+			<source ref="id60"/>
+			<target ref="id59"/>
+			<label kind="synchronisation" x="-136" y="-7">access_ar?</label>
+		</transition>
+		<transition>
+			<source ref="id61"/>
+			<target ref="id60"/>
+			<label kind="guard" x="-226" y="-33">art</label>
+			<label kind="synchronisation" x="-237" y="-7">manage_ar!</label>
+		</transition>
+		<transition>
+			<source ref="id55"/>
+			<target ref="id54"/>
+			<label kind="synchronisation" x="-465" y="-33">access_cmt?</label>
+		</transition>
+		<transition>
+			<source ref="id61"/>
+			<target ref="id55"/>
+			<label kind="guard" x="-337" y="-44">cmt</label>
+			<label kind="synchronisation" x="-362" y="-33">manage_cmt!</label>
+		</transition>
+		<transition>
+			<source ref="id56"/>
+			<target ref="id61"/>
+			<label kind="synchronisation" x="-252" y="-102">added_cmt?</label>
+			<label kind="assignment" x="-242" y="-83">cmt=1</label>
+			<nail x="-250" y="-84"/>
+		</transition>
+		<transition>
+			<source ref="id59"/>
+			<target ref="id56"/>
+			<label kind="guard" x="-122" y="-104">!cmt</label>
+			<label kind="synchronisation" x="-125" y="-85">add_cmt!</label>
+			<nail x="-64" y="-84"/>
+		</transition>
+		<transition>
+			<source ref="id59"/>
+			<target ref="id58"/>
+			<label kind="synchronisation" x="-116" y="31">edit_ar!</label>
+			<nail x="-52" y="55"/>
+		</transition>
+		<transition>
+			<source ref="id59"/>
+			<target ref="id61"/>
+			<label kind="synchronisation" x="-166" y="-51">cancel!</label>
+			<nail x="-68" y="-46"/>
+			<nail x="-244" y="-49"/>
+		</transition>
+		<transition>
+			<source ref="id58"/>
+			<target ref="id61"/>
+			<label kind="synchronisation" x="-232" y="32">edited_ar?</label>
+			<nail x="-243" y="57"/>
+			<nail x="-250" y="35"/>
+		</transition>
+		<transition>
+			<source ref="id57"/>
+			<target ref="id51"/>
+			<label kind="synchronisation" x="-356" y="-120">deleted_ar?</label>
+			<label kind="assignment" x="-357" y="-108">cmt=0</label>
+			<nail x="-282" y="-119"/>
+			<nail x="-396" y="-117"/>
+			<nail x="-453" y="-116"/>
+		</transition>
+		<transition>
+			<source ref="id59"/>
+			<target ref="id57"/>
+			<label kind="synchronisation" x="-219" y="-122">delete_ar!</label>
+			<nail x="-53" y="-119"/>
+			<nail x="-129" y="-120"/>
+		</transition>
+	</template>
+	<template>
+		<name>M0_r1</name>
+		<location id="id62" x="-257" y="-18">
+		</location>
+		<location id="id63" x="-373" y="22">
+		</location>
+		<location id="id64" x="-475" y="-17">
+		</location>
+		<location id="id65" x="-373" y="48">
+		</location>
+		<location id="id66" x="-146" y="-19">
+		</location>
+		<location id="id67" x="-53" y="-19">
+			<committed/>
+		</location>
+		<location id="id68" x="-374" y="-19">
+		</location>
+		<location id="id69" x="-146" y="-84">
+		</location>
+		<init ref="id62"/>
+		<transition color="#a9a9a9">
+			<source ref="id63"/>
+			<target ref="id62"/>
+			<label kind="synchronisation" x="-358" y="-5">deleted_cmt?</label>
+			<label kind="assignment" x="-355" y="21">cmt=0</label>
+			<nail x="-277" y="23"/>
+		</transition>
+		<transition color="#a9a9a9">
+			<source ref="id64"/>
+			<target ref="id63"/>
+			<label kind="synchronisation" x="-453" y="-1">dele_cmt!</label>
+			<nail x="-453" y="24"/>
+		</transition>
+		<transition>
+			<source ref="id64"/>
+			<target ref="id62"/>
+			<label kind="synchronisation" x="-393" y="-59">cancel!</label>
+			<nail x="-455" y="-55"/>
+			<nail x="-299" y="-58"/>
+		</transition>
+		<transition color="#a9a9a9">
+			<source ref="id65"/>
+			<target ref="id62"/>
+			<label kind="synchronisation" x="-354" y="49">edited_cmt?</label>
+			<nail x="-276" y="49"/>
+		</transition>
+		<transition color="#a9a9a9">
+			<source ref="id64"/>
+			<target ref="id65"/>
+			<label kind="synchronisation" x="-448" y="49">edit_cmt!</label>
+			<nail x="-456" y="49"/>
+		</transition>
+		<transition>
+			<source ref="id66"/>
+			<target ref="id67"/>
+			<label kind="synchronisation" x="-137" y="-15">access_ar?</label>
+		</transition>
+		<transition>
+			<source ref="id62"/>
+			<target ref="id66"/>
+			<label kind="guard" x="-226" y="-38">art</label>
+			<label kind="synchronisation" x="-238" y="-15">manage_ar!</label>
+		</transition>
+		<transition>
+			<source ref="id68"/>
+			<target ref="id64"/>
+			<label kind="synchronisation" x="-461" y="-44">access_cmt?</label>
+		</transition>
+		<transition>
+			<source ref="id62"/>
+			<target ref="id68"/>
+			<label kind="guard" x="-338" y="-52">cmt</label>
+			<label kind="synchronisation" x="-363" y="-41">manage_cmt!</label>
+		</transition>
+		<transition>
+			<source ref="id69"/>
+			<target ref="id62"/>
+			<label kind="synchronisation" x="-252" y="-102">added_cmt?</label>
+			<label kind="assignment" x="-232" y="-84">cmt=1</label>
+			<nail x="-250" y="-84"/>
+		</transition>
+		<transition>
+			<source ref="id67"/>
+			<target ref="id69"/>
+			<label kind="guard" x="-122" y="-104">!cmt</label>
+			<label kind="synchronisation" x="-125" y="-85">add_cmt!</label>
+			<nail x="-57" y="-33"/>
+			<nail x="-64" y="-83"/>
+		</transition>
+		<transition>
+			<source ref="id67"/>
+			<target ref="id62"/>
+			<label kind="synchronisation" x="-167" y="-59">cancel!</label>
+			<nail x="-69" y="-54"/>
+			<nail x="-245" y="-57"/>
+		</transition>
+	</template>
+	<template>
+		<name>M1user_1Art_mulCmt</name>
+		<declaration>// single article with multiple comments from 2 users
+
+
+</declaration>
+		<location id="id70" x="-375" y="-96">
+		</location>
+		<location id="id71" x="-257" y="-18">
+		</location>
+		<location id="id72" x="-476" y="-94">
+		</location>
+		<location id="id73" x="-439" y="31">
+		</location>
+		<location id="id74" x="-564" y="-16">
+			<committed/>
+		</location>
+		<location id="id75" x="-435" y="65">
+		</location>
+		<location id="id76" x="-146" y="-19">
+		</location>
+		<location id="id77" x="-53" y="-20">
+			<committed/>
+		</location>
+		<location id="id78" x="-445" y="-18">
+		</location>
+		<location id="id79" x="-146" y="-97">
+		</location>
+		<location id="id80" x="-138" y="58">
+		</location>
+		<location id="id81" x="-262" y="-132">
+		</location>
+		<init ref="id72"/>
+		<transition>
+			<source ref="id70"/>
+			<target ref="id71"/>
+			<label kind="synchronisation" x="-357" y="-98">added_ar?</label>
+			<label kind="assignment" x="-357" y="-86">art =1</label>
+			<nail x="-283" y="-97"/>
+		</transition>
+		<transition>
+			<source ref="id72"/>
+			<target ref="id70"/>
+			<label kind="synchronisation" x="-452" y="-99">add_ar!</label>
+		</transition>
+		<transition>
+			<source ref="id73"/>
+			<target ref="id71"/>
+			<label kind="synchronisation" x="-408" y="1">deleted_cmt?</label>
+			<label kind="assignment" x="-409" y="27">delcmt(c)</label>
+			<nail x="-278" y="30"/>
+		</transition>
+		<transition>
+			<source ref="id74"/>
+			<target ref="id73"/>
+			<label kind="synchronisation" x="-535" y="11">dele_cmt!</label>
+			<label kind="assignment" x="-525" y="30">cu=0</label>
+			<nail x="-543" y="32"/>
+		</transition>
+		<transition>
+			<source ref="id74"/>
+			<target ref="id71"/>
+			<label kind="synchronisation" x="-534" y="-83">cancel!</label>
+			<label kind="assignment" x="-526" y="-63">cu=0</label>
+			<nail x="-544" y="-61"/>
+			<nail x="-299" y="-65"/>
+		</transition>
+		<transition>
+			<source ref="id75"/>
+			<target ref="id71"/>
+			<label kind="synchronisation" x="-351" y="65">edited_cmt?</label>
+			<nail x="-273" y="65"/>
+		</transition>
+		<transition>
+			<source ref="id74"/>
+			<target ref="id75"/>
+			<label kind="synchronisation" x="-534" y="65">edit_cmt!</label>
+			<label kind="assignment" x="-531" y="77">cu=0</label>
+			<nail x="-542" y="66"/>
+		</transition>
+		<transition>
+			<source ref="id76"/>
+			<target ref="id77"/>
+			<label kind="synchronisation" x="-137" y="-15">access_ar?</label>
+		</transition>
+		<transition>
+			<source ref="id71"/>
+			<target ref="id76"/>
+			<label kind="synchronisation" x="-243" y="-42">manage_ar!</label>
+			<label kind="assignment" x="-239" y="-18">cu=0</label>
+		</transition>
+		<transition>
+			<source ref="id78"/>
+			<target ref="id74"/>
+			<label kind="synchronisation" x="-539" y="-16">access_cmt?</label>
+		</transition>
+		<transition>
+			<source ref="id71"/>
+			<target ref="id78"/>
+			<label kind="select" x="-416" y="-67">s:int[0,1]</label>
+			<label kind="guard" x="-416" y="-54">cmt_array[s]&gt;0</label>
+			<label kind="synchronisation" x="-416" y="-40">manage_cmt!</label>
+			<label kind="assignment" x="-408" y="-21">c=s, cu=0</label>
+		</transition>
+		<transition>
+			<source ref="id79"/>
+			<target ref="id71"/>
+			<label kind="synchronisation" x="-252" y="-115">added_cmt?</label>
+			<label kind="assignment" x="-232" y="-97">addcmt()</label>
+			<nail x="-250" y="-97"/>
+		</transition>
+		<transition>
+			<source ref="id77"/>
+			<target ref="id79"/>
+			<label kind="guard" x="-122" y="-117">i&lt;2</label>
+			<label kind="synchronisation" x="-125" y="-98">add_cmt!</label>
+			<nail x="-64" y="-97"/>
+		</transition>
+		<transition>
+			<source ref="id77"/>
+			<target ref="id80"/>
+			<label kind="synchronisation" x="-121" y="33">edit_ar!</label>
+			<label kind="assignment" x="-120" y="57">cu=0</label>
+			<nail x="-53" y="57"/>
+		</transition>
+		<transition>
+			<source ref="id77"/>
+			<target ref="id71"/>
+			<label kind="synchronisation" x="-167" y="-59">cancel!</label>
+			<nail x="-69" y="-54"/>
+			<nail x="-245" y="-57"/>
+		</transition>
+		<transition>
+			<source ref="id80"/>
+			<target ref="id71"/>
+			<label kind="synchronisation" x="-234" y="35">edited_ar?</label>
+			<nail x="-240" y="58"/>
+			<nail x="-251" y="27"/>
+		</transition>
+		<transition>
+			<source ref="id81"/>
+			<target ref="id72"/>
+			<label kind="synchronisation" x="-356" y="-133">deleted_ar?</label>
+			<label kind="assignment" x="-357" y="-121">cmt=0, art=0</label>
+			<nail x="-282" y="-132"/>
+			<nail x="-396" y="-130"/>
+			<nail x="-453" y="-129"/>
+		</transition>
+		<transition>
+			<source ref="id77"/>
+			<target ref="id81"/>
+			<label kind="synchronisation" x="-219" y="-135">delete_ar!</label>
+			<label kind="assignment" x="-111" y="-132">cu=0</label>
+			<nail x="-53" y="-132"/>
+			<nail x="-129" y="-133"/>
+		</transition>
+	</template>
+	<template>
+		<name>M1reader_1Art_MulCmt</name>
+		<declaration>
+</declaration>
+		<location id="id82" x="-1863" y="-847">
+		</location>
+		<location id="id83" x="-2014" y="-785">
+		</location>
+		<location id="id84" x="-2145" y="-824">
+			<committed/>
+		</location>
+		<location id="id85" x="-2012" y="-745">
+		</location>
+		<location id="id86" x="-1752" y="-848">
+		</location>
+		<location id="id87" x="-1659" y="-845">
+			<committed/>
+		</location>
+		<location id="id88" x="-2016" y="-824">
+		</location>
+		<location id="id89" x="-1752" y="-913">
+		</location>
+		<location id="id90" x="-1743" y="-765">
+		</location>
+		<location id="id91" x="-1868" y="-948">
+		</location>
+		<init ref="id82"/>
+		<transition>
+			<source ref="id83"/>
+			<target ref="id82"/>
+			<label kind="synchronisation" x="-1975" y="-804">deleted_cmt?</label>
+			<label kind="assignment" x="-1976" y="-786">delcmt(c)</label>
+			<nail x="-1884" y="-783"/>
+		</transition>
+		<transition>
+			<source ref="id84"/>
+			<target ref="id83"/>
+			<label kind="synchronisation" x="-2113" y="-805">dele_cmt!</label>
+			<label kind="assignment" x="-2112" y="-786">cu=1</label>
+			<nail x="-2124" y="-785"/>
+		</transition>
+		<transition>
+			<source ref="id84"/>
+			<target ref="id82"/>
+			<label kind="synchronisation" x="-2047" y="-887">cancel!</label>
+			<label kind="assignment" x="-2106" y="-886">cu=1</label>
+			<nail x="-2124" y="-885"/>
+			<nail x="-1905" y="-887"/>
+		</transition>
+		<transition>
+			<source ref="id85"/>
+			<target ref="id82"/>
+			<label kind="synchronisation" x="-1991" y="-765">edited_cmt?</label>
+			<nail x="-1888" y="-745"/>
+		</transition>
+		<transition>
+			<source ref="id84"/>
+			<target ref="id85"/>
+			<label kind="synchronisation" x="-2112" y="-765">edit_cmt!</label>
+			<label kind="assignment" x="-2108" y="-745">cu=1</label>
+			<nail x="-2126" y="-745"/>
+		</transition>
+		<transition>
+			<source ref="id86"/>
+			<target ref="id87"/>
+			<label kind="synchronisation" x="-1743" y="-844">access_ar?</label>
+		</transition>
+		<transition>
+			<source ref="id82"/>
+			<target ref="id86"/>
+			<label kind="guard" x="-1829" y="-870">art</label>
+			<label kind="synchronisation" x="-1846" y="-837">manage_ar!</label>
+			<label kind="assignment" x="-1845" y="-847">cu=1</label>
+		</transition>
+		<transition>
+			<source ref="id88"/>
+			<target ref="id84"/>
+			<label kind="synchronisation" x="-2118" y="-847">access_cmt?</label>
+		</transition>
+		<transition>
+			<source ref="id82"/>
+			<target ref="id88"/>
+			<label kind="select" x="-1970" y="-877">s: int[0,1]</label>
+			<label kind="guard" x="-1971" y="-860">cmt_array[s]&gt;0</label>
+			<label kind="synchronisation" x="-1969" y="-846">manage_cmt!</label>
+			<label kind="assignment" x="-1969" y="-827">c=s, cu=1</label>
+			<nail x="-1888" y="-825"/>
+		</transition>
+		<transition>
+			<source ref="id89"/>
+			<target ref="id82"/>
+			<label kind="synchronisation" x="-1858" y="-931">added_cmt?</label>
+			<label kind="assignment" x="-1850" y="-913">addcmt()</label>
+			<nail x="-1856" y="-913"/>
+		</transition>
+		<transition>
+			<source ref="id87"/>
+			<target ref="id89"/>
+			<label kind="synchronisation" x="-1731" y="-914">add_cmt!</label>
+			<nail x="-1670" y="-913"/>
+		</transition>
+		<transition color="#a9a9a9">
+			<source ref="id87"/>
+			<target ref="id90"/>
+			<label kind="synchronisation" x="-1723" y="-788">edit_ar!</label>
+			<nail x="-1658" y="-765"/>
+		</transition>
+		<transition>
+			<source ref="id87"/>
+			<target ref="id82"/>
+			<label kind="synchronisation" x="-1773" y="-888">cancel!</label>
+			<nail x="-1675" y="-883"/>
+			<nail x="-1851" y="-886"/>
+		</transition>
+		<transition color="#a9a9a9">
+			<source ref="id90"/>
+			<target ref="id82"/>
+			<label kind="synchronisation" x="-1840" y="-788">edited_ar?</label>
+			<nail x="-1850" y="-767"/>
+			<nail x="-1857" y="-802"/>
+		</transition>
+		<transition color="#a9a9a9">
+			<source ref="id91"/>
+			<target ref="id82"/>
+			<label kind="synchronisation" x="-1962" y="-949">deleted_ar?</label>
+			<label kind="assignment" x="-1956" y="-931">cmt=0</label>
+			<nail x="-1888" y="-948"/>
+			<nail x="-1986" y="-944"/>
+			<nail x="-1986" y="-910"/>
+			<nail x="-1908" y="-909"/>
+		</transition>
+		<transition color="#c0c0c0">
+			<source ref="id87"/>
+			<target ref="id91"/>
+			<label kind="synchronisation" x="-1825" y="-951">delete_ar!</label>
+			<label kind="assignment" x="-1717" y="-948">cu=1</label>
+			<nail x="-1659" y="-948"/>
+			<nail x="-1735" y="-949"/>
+		</transition>
+	</template>
+	<template>
+		<name>M2u0</name>
+		<location id="id92" x="-511" y="-159">
+		</location>
+		<location id="id93" x="-257" y="-18">
+		</location>
+		<location id="id94" x="-439" y="31">
+		</location>
+		<location id="id95" x="-542" y="-16">
+			<committed/>
+		</location>
+		<location id="id96" x="-435" y="65">
+		</location>
+		<location id="id97" x="-140" y="-19">
+		</location>
+		<location id="id98" x="-82" y="-20">
+			<committed/>
+		</location>
+		<location id="id99" x="-445" y="-18">
+		</location>
+		<location id="id100" x="-215" y="-135">
+		</location>
+		<location id="id101" x="-149" y="61">
+		</location>
+		<location id="id102" x="-260" y="-169">
+		</location>
+		<init ref="id93"/>
+		<transition>
+			<source ref="id92"/>
+			<target ref="id93"/>
+			<label kind="synchronisation" x="-483" y="-181">added_ar?</label>
+			<nail x="-374" y="-159"/>
+			<nail x="-373" y="-135"/>
+			<nail x="-285" y="-136"/>
+		</transition>
+		<transition>
+			<source ref="id93"/>
+			<target ref="id92"/>
+			<label kind="guard" x="-494" y="-148">i&lt;max_art</label>
+			<label kind="synchronisation" x="-492" y="-135">add_ar!</label>
+			<nail x="-287" y="-114"/>
+			<nail x="-510" y="-113"/>
+		</transition>
+		<transition>
+			<source ref="id94"/>
+			<target ref="id93"/>
+			<label kind="synchronisation" x="-410" y="10">deleted_cmt?</label>
+			<nail x="-278" y="30"/>
+		</transition>
+		<transition>
+			<source ref="id95"/>
+			<target ref="id94"/>
+			<label kind="synchronisation" x="-516" y="9">dele_cmt!</label>
+			<label kind="assignment" x="-503" y="30">cu=0</label>
+			<nail x="-521" y="32"/>
+		</transition>
+		<transition>
+			<source ref="id95"/>
+			<target ref="id93"/>
+			<label kind="synchronisation" x="-484" y="-100">cancel!</label>
+			<label kind="assignment" x="-482" y="-87">cu=0</label>
+			<nail x="-520" y="-98"/>
+			<nail x="-297" y="-102"/>
+		</transition>
+		<transition>
+			<source ref="id96"/>
+			<target ref="id93"/>
+			<label kind="synchronisation" x="-404" y="46">edited_cmt?</label>
+			<nail x="-273" y="65"/>
+		</transition>
+		<transition>
+			<source ref="id95"/>
+			<target ref="id96"/>
+			<label kind="synchronisation" x="-510" y="46">edit_cmt!</label>
+			<label kind="assignment" x="-506" y="65">cu=0</label>
+			<nail x="-520" y="66"/>
+		</transition>
+		<transition>
+			<source ref="id97"/>
+			<target ref="id98"/>
+			<label kind="synchronisation" x="-157" y="-8">access_ar?</label>
+		</transition>
+		<transition>
+			<source ref="id93"/>
+			<target ref="id97"/>
+			<label kind="select" x="-239" y="-68">a:int[0,max_art-1]</label>
+			<label kind="guard" x="-239" y="-52">articles[a]&gt;0</label>
+			<label kind="synchronisation" x="-238" y="-38">manage_ar!</label>
+			<label kind="assignment" x="-239" y="-18">cu=0,sa=a</label>
+		</transition>
+		<transition>
+			<source ref="id99"/>
+			<target ref="id95"/>
+			<label kind="synchronisation" x="-529" y="-49">access_cmt?</label>
+		</transition>
+		<transition>
+			<source ref="id93"/>
+			<target ref="id99"/>
+			<label kind="select" x="-415" y="-92">com:int[0,N-1],
+a:int[0,max_art-1]</label>
+			<label kind="guard" x="-416" y="-57">comments[a][com]&gt;0</label>
+			<label kind="synchronisation" x="-416" y="-40">manage_cmt!</label>
+			<label kind="assignment" x="-415" y="-21">sa=a,c=com,cu=0</label>
+		</transition>
+		<transition>
+			<source ref="id100"/>
+			<target ref="id93"/>
+			<label kind="synchronisation" x="-250" y="-123">added_cmt?</label>
+			<nail x="-256" y="-134"/>
+		</transition>
+		<transition>
+			<source ref="id98"/>
+			<target ref="id100"/>
+			<label kind="guard" x="-191" y="-155">numOfComInArt[sa]&lt;max_art</label>
+			<label kind="synchronisation" x="-159" y="-132">add_cmt!</label>
+			<label kind="comments" x="-19" y="-61">number of comments in an article can not exceed more than 2.</label>
+			<nail x="-91" y="-134"/>
+		</transition>
+		<transition>
+			<source ref="id98"/>
+			<target ref="id101"/>
+			<label kind="synchronisation" x="-132" y="33">edit_ar!</label>
+			<label kind="assignment" x="-131" y="57">cu=0</label>
+			<nail x="-81" y="61"/>
+		</transition>
+		<transition>
+			<source ref="id98"/>
+			<target ref="id93"/>
+			<label kind="synchronisation" x="-187" y="-95">cancel!</label>
+			<nail x="-95" y="-73"/>
+			<nail x="-242" y="-76"/>
+		</transition>
+		<transition>
+			<source ref="id101"/>
+			<target ref="id93"/>
+			<label kind="synchronisation" x="-234" y="35">edited_ar?</label>
+			<nail x="-247" y="60"/>
+			<nail x="-251" y="27"/>
+		</transition>
+		<transition>
+			<source ref="id102"/>
+			<target ref="id93"/>
+			<label kind="synchronisation" x="-350" y="-169">deleted_ar?</label>
+			<nail x="-319" y="-169"/>
+			<nail x="-362" y="-169"/>
+			<nail x="-356" y="-143"/>
+			<nail x="-273" y="-142"/>
+		</transition>
+		<transition>
+			<source ref="id98"/>
+			<target ref="id102"/>
+			<label kind="synchronisation" x="-222" y="-193">delete_ar!</label>
+			<label kind="assignment" x="-218" y="-170">cu=0</label>
+			<nail x="-80" y="-169"/>
+			<nail x="-138" y="-170"/>
+		</transition>
+	</template>
+	<template>
+		<name>M2u1</name>
+		<location id="id103" x="-258" y="9">
+		</location>
+		<location id="id104" x="-446" y="66">
+		</location>
+		<location id="id105" x="-548" y="10">
+			<committed/>
+		</location>
+		<location id="id106" x="-446" y="102">
+		</location>
+		<location id="id107" x="-141" y="8">
+		</location>
+		<location id="id108" x="-54" y="7">
+			<committed/>
+		</location>
+		<location id="id109" x="-446" y="9">
+		</location>
+		<location id="id110" x="-233" y="-108">
+		</location>
+		<init ref="id103"/>
+		<transition>
+			<source ref="id104"/>
+			<target ref="id103"/>
+			<label kind="synchronisation" x="-408" y="44">deleted_cmt?</label>
+			<nail x="-278" y="66"/>
+		</transition>
+		<transition>
+			<source ref="id105"/>
+			<target ref="id104"/>
+			<label kind="synchronisation" x="-526" y="47">dele_cmt!</label>
+			<label kind="assignment" x="-509" y="67">cu=1</label>
+			<nail x="-527" y="67"/>
+		</transition>
+		<transition>
+			<source ref="id105"/>
+			<target ref="id103"/>
+			<label kind="synchronisation" x="-496" y="-101">cancel!</label>
+			<label kind="assignment" x="-497" y="-77">cu=1</label>
+			<nail x="-523" y="-79"/>
+			<nail x="-300" y="-78"/>
+		</transition>
+		<transition>
+			<source ref="id106"/>
+			<target ref="id103"/>
+			<label kind="synchronisation" x="-404" y="102">edited_cmt?</label>
+			<nail x="-273" y="101"/>
+		</transition>
+		<transition>
+			<source ref="id105"/>
+			<target ref="id106"/>
+			<label kind="synchronisation" x="-517" y="102">edit_cmt!</label>
+			<label kind="assignment" x="-516" y="117">cu=1</label>
+			<nail x="-525" y="103"/>
+		</transition>
+		<transition>
+			<source ref="id107"/>
+			<target ref="id108"/>
+			<label kind="synchronisation" x="-133" y="16">access_ar?</label>
+		</transition>
+		<transition>
+			<source ref="id103"/>
+			<target ref="id107"/>
+			<label kind="select" x="-239" y="-49">a:int[0,max_art-1]</label>
+			<label kind="guard" x="-239" y="-31">articles[a]&gt;0</label>
+			<label kind="synchronisation" x="-239" y="-14">manage_ar!</label>
+			<label kind="assignment" x="-240" y="9">cu=1, sa=a</label>
+		</transition>
+		<transition>
+			<source ref="id109"/>
+			<target ref="id105"/>
+			<label kind="synchronisation" x="-535" y="-18">access_cmt?</label>
+		</transition>
+		<transition>
+			<source ref="id103"/>
+			<target ref="id109"/>
+			<label kind="select" x="-419" y="-68">com:int[0,N-1],
+a:int[0,max_art-1]</label>
+			<label kind="guard" x="-419" y="-28">comments[a][com]&gt;0</label>
+			<label kind="synchronisation" x="-418" y="-9">manage_cmt!</label>
+			<label kind="assignment" x="-419" y="11">sa=a,c=com,cu=1</label>
+		</transition>
+		<transition>
+			<source ref="id110"/>
+			<target ref="id103"/>
+			<label kind="synchronisation" x="-337" y="-107">added_cmt?</label>
+			<nail x="-251" y="-107"/>
+		</transition>
+		<transition>
+			<source ref="id108"/>
+			<target ref="id110"/>
+			<label kind="guard" x="-221" y="-131">numOfComInArt[sa]&lt;max_art</label>
+			<label kind="synchronisation" x="-204" y="-109">add_cmt!</label>
+			<nail x="-65" y="-107"/>
+		</transition>
+		<transition>
+			<source ref="id108"/>
+			<target ref="id103"/>
+			<label kind="synchronisation" x="-168" y="-73">cancel!</label>
+			<nail x="-70" y="-52"/>
+			<nail x="-246" y="-50"/>
+		</transition>
+	</template>
+	<template>
+		<name>M3u1</name>
+		<location id="id111" x="-529" y="-184">
+		</location>
+		<location id="id112" x="-257" y="-18">
+		</location>
+		<location id="id113" x="-439" y="60">
+		</location>
+		<location id="id114" x="-564" y="-16">
+			<committed/>
+		</location>
+		<location id="id115" x="-107" y="-20">
+		</location>
+		<location id="id116" x="-23" y="-21">
+			<committed/>
+		</location>
+		<location id="id117" x="-445" y="-18">
+		</location>
+		<location id="id118" x="-175" y="-170">
+		</location>
+		<location id="id119" x="-256" y="-205">
+		</location>
+		<init ref="id112"/>
+		<transition>
+			<source ref="id111"/>
+			<target ref="id112"/>
+			<label kind="synchronisation" x="-492" y="-207">added_ar?</label>
+			<nail x="-366" y="-184"/>
+			<nail x="-365" y="-160"/>
+			<nail x="-277" y="-161"/>
+		</transition>
+		<transition>
+			<source ref="id112"/>
+			<target ref="id111"/>
+			<label kind="guard" x="-517" y="-184">user_articles[0]&lt;max_art</label>
+			<label kind="synchronisation" x="-492" y="-170">add_ar!</label>
+			<label kind="assignment" x="-510" y="-153">cu=0</label>
+			<label kind="comments" x="-833" y="-169">number of articles for this user is limited to 2.</label>
+			<nail x="-283" y="-150"/>
+			<nail x="-528" y="-149"/>
+		</transition>
+		<transition>
+			<source ref="id113"/>
+			<target ref="id112"/>
+			<label kind="synchronisation" x="-415" y="35">deleted_cmt?</label>
+			<nail x="-278" y="59"/>
+		</transition>
+		<transition>
+			<source ref="id114"/>
+			<target ref="id113"/>
+			<label kind="synchronisation" x="-532" y="39">dele_cmt!</label>
+			<label kind="assignment" x="-525" y="59">cu=0</label>
+			<nail x="-543" y="61"/>
+		</transition>
+		<transition>
+			<source ref="id114"/>
+			<target ref="id112"/>
+			<label kind="synchronisation" x="-538" y="-94">cancel!</label>
+			<label kind="assignment" x="-534" y="-78">cu=0</label>
+			<nail x="-538" y="-124"/>
+			<nail x="-293" y="-128"/>
+		</transition>
+		<transition>
+			<source ref="id115"/>
+			<target ref="id116"/>
+			<label kind="synchronisation" x="-105" y="-9">access_ar?</label>
+		</transition>
+		<transition>
+			<source ref="id112"/>
+			<target ref="id115"/>
+			<label kind="select" x="-240" y="-90">u:int[0,1],
+a:int[0,1]</label>
+			<label kind="guard" x="-239" y="-54">article_array3[u][a]&gt;0</label>
+			<label kind="synchronisation" x="-238" y="-39">manage_ar!</label>
+			<label kind="assignment" x="-239" y="-18">su=u,
+cu=0,sa=a</label>
+		</transition>
+		<transition>
+			<source ref="id117"/>
+			<target ref="id114"/>
+			<label kind="synchronisation" x="-539" y="-16">access_cmt?</label>
+		</transition>
+		<transition>
+			<source ref="id112"/>
+			<target ref="id117"/>
+			<label kind="select" x="-421" y="-118">u:int[0,1],
+a:int[0,1]</label>
+			<label kind="guard" x="-422" y="-61">cmt_array3[u][a]&gt;0</label>
+			<label kind="synchronisation" x="-423" y="-41">manage_cmt!</label>
+			<label kind="assignment" x="-423" y="-19">su=u,sa=a,
+cu=0</label>
+		</transition>
+		<transition>
+			<source ref="id118"/>
+			<target ref="id112"/>
+			<label kind="synchronisation" x="-246" y="-162">added_cmt?</label>
+			<nail x="-252" y="-170"/>
+		</transition>
+		<transition>
+			<source ref="id116"/>
+			<target ref="id118"/>
+			<label kind="guard" x="-162" y="-190">numOfComInArt3[su][sa]&lt;1</label>
+			<label kind="synchronisation" x="-114" y="-169">add_cmt!</label>
+			<label kind="comments" x="25" y="-152">number of comments in an article can not exceed more than 2.</label>
+			<nail x="-28" y="-171"/>
+		</transition>
+		<transition>
+			<source ref="id116"/>
+			<target ref="id112"/>
+			<label kind="synchronisation" x="-114" y="-107">cancel!</label>
+			<nail x="-33" y="-114"/>
+			<nail x="-239" y="-116"/>
+		</transition>
+		<transition>
+			<source ref="id119"/>
+			<target ref="id112"/>
+			<label kind="synchronisation" x="-346" y="-205">deleted_ar?</label>
+			<nail x="-315" y="-205"/>
+			<nail x="-358" y="-205"/>
+			<nail x="-352" y="-179"/>
+			<nail x="-269" y="-178"/>
+		</transition>
+		<transition>
+			<source ref="id116"/>
+			<target ref="id119"/>
+			<label kind="synchronisation" x="-218" y="-229">delete_ar!</label>
+			<label kind="assignment" x="-75" y="-206">cu=0</label>
+			<nail x="-17" y="-206"/>
+			<nail x="-93" y="-207"/>
+		</transition>
+	</template>
+	<template>
+		<name>M3u0</name>
+		<location id="id120" x="-532" y="-164">
+		</location>
+		<location id="id121" x="-257" y="-18">
+		</location>
+		<location id="id122" x="-438" y="56">
+		</location>
+		<location id="id123" x="-564" y="-16">
+			<committed/>
+		</location>
+		<location id="id124" x="-101" y="-18">
+		</location>
+		<location id="id125" x="-23" y="-18">
+			<committed/>
+		</location>
+		<location id="id126" x="-457" y="-16">
+		</location>
+		<location id="id127" x="-178" y="-150">
+		</location>
+		<location id="id128" x="-259" y="-185">
+		</location>
+		<init ref="id121"/>
+		<transition>
+			<source ref="id120"/>
+			<target ref="id121"/>
+			<label kind="synchronisation" x="-495" y="-187">added_ar?</label>
+			<nail x="-361" y="-165"/>
+			<nail x="-364" y="-140"/>
+			<nail x="-280" y="-141"/>
+		</transition>
+		<transition>
+			<source ref="id121"/>
+			<target ref="id120"/>
+			<label kind="guard" x="-520" y="-164">user_articles[1]&lt;max_art</label>
+			<label kind="synchronisation" x="-495" y="-150">add_ar!</label>
+			<label kind="assignment" x="-513" y="-133">cu=1</label>
+			<label kind="comments" x="-836" y="-149">number of articles for this user is limited to 2.</label>
+			<nail x="-286" y="-130"/>
+			<nail x="-531" y="-129"/>
+		</transition>
+		<transition>
+			<source ref="id122"/>
+			<target ref="id121"/>
+			<label kind="synchronisation" x="-407" y="26">deleted_cmt?</label>
+			<nail x="-277" y="55"/>
+		</transition>
+		<transition>
+			<source ref="id123"/>
+			<target ref="id122"/>
+			<label kind="synchronisation" x="-534" y="36">dele_cmt!</label>
+			<label kind="assignment" x="-524" y="55">cu=1</label>
+			<nail x="-542" y="57"/>
+		</transition>
+		<transition>
+			<source ref="id123"/>
+			<target ref="id121"/>
+			<label kind="synchronisation" x="-483" y="-116">cancel!</label>
+			<label kind="assignment" x="-523" y="-116">cu=1</label>
+			<nail x="-541" y="-114"/>
+			<nail x="-296" y="-118"/>
+		</transition>
+		<transition>
+			<source ref="id124"/>
+			<target ref="id125"/>
+			<label kind="synchronisation" x="-105" y="-9">access_ar?</label>
+		</transition>
+		<transition>
+			<source ref="id121"/>
+			<target ref="id124"/>
+			<label kind="select" x="-239" y="-91">u:int[0,1],
+a:int[0,1]</label>
+			<label kind="guard" x="-239" y="-52">article_array3[u][a]&gt;0</label>
+			<label kind="synchronisation" x="-238" y="-38">manage_ar!</label>
+			<label kind="assignment" x="-239" y="-18">cu=1,sa=a,
+su=u</label>
+		</transition>
+		<transition>
+			<source ref="id126"/>
+			<target ref="id123"/>
+			<label kind="synchronisation" x="-539" y="-16">access_cmt?</label>
+		</transition>
+		<transition>
+			<source ref="id121"/>
+			<target ref="id126"/>
+			<label kind="select" x="-432" y="-110">u:int[0,1],
+a:int[0,1]</label>
+			<label kind="guard" x="-433" y="-57">cmt_array3[u][a]&gt;0</label>
+			<label kind="synchronisation" x="-433" y="-40">manage_cmt!</label>
+			<label kind="assignment" x="-415" y="-21">sa=a,
+cu=1,su=u</label>
+		</transition>
+		<transition>
+			<source ref="id127"/>
+			<target ref="id121"/>
+			<label kind="synchronisation" x="-249" y="-142">added_cmt?</label>
+			<nail x="-255" y="-150"/>
+		</transition>
+		<transition>
+			<source ref="id125"/>
+			<target ref="id127"/>
+			<label kind="guard" x="-165" y="-170">numOfComInArt3[su][sa]&lt;1</label>
+			<label kind="synchronisation" x="-117" y="-149">add_cmt!</label>
+			<label kind="comments" x="-19" y="-61">number of comments in an article can not exceed more than 2.</label>
+			<nail x="-31" y="-151"/>
+		</transition>
+		<transition>
+			<source ref="id125"/>
+			<target ref="id121"/>
+			<label kind="synchronisation" x="-164" y="-129">cancel!</label>
+			<nail x="-36" y="-108"/>
+			<nail x="-242" y="-110"/>
+		</transition>
+		<transition>
+			<source ref="id128"/>
+			<target ref="id121"/>
+			<label kind="synchronisation" x="-345" y="-181">deleted_ar?</label>
+			<nail x="-311" y="-184"/>
+			<nail x="-354" y="-184"/>
+			<nail x="-348" y="-158"/>
+			<nail x="-265" y="-157"/>
+		</transition>
+		<transition>
+			<source ref="id125"/>
+			<target ref="id128"/>
+			<label kind="synchronisation" x="-221" y="-209">delete_ar!</label>
+			<label kind="assignment" x="-78" y="-186">cu=1</label>
+			<nail x="-20" y="-186"/>
+			<nail x="-96" y="-187"/>
+		</transition>
+	</template>
+	<template>
+		<name>M4U0</name>
+		<location id="id129" x="-529" y="-184">
+		</location>
+		<location id="id130" x="-257" y="-18">
+		</location>
+		<location id="id131" x="-438" y="90">
+		</location>
+		<location id="id132" x="-564" y="-16">
+			<committed/>
+		</location>
+		<location id="id133" x="-107" y="-20">
+		</location>
+		<location id="id134" x="-23" y="-21">
+			<committed/>
+		</location>
+		<location id="id135" x="-445" y="-18">
+		</location>
+		<location id="id136" x="-175" y="-170">
+		</location>
+		<location id="id137" x="-256" y="-205">
+		</location>
+		<init ref="id130"/>
+		<transition>
+			<source ref="id129"/>
+			<target ref="id130"/>
+			<label kind="synchronisation" x="-492" y="-207">added_ar?</label>
+			<nail x="-366" y="-184"/>
+			<nail x="-365" y="-160"/>
+			<nail x="-277" y="-161"/>
+		</transition>
+		<transition>
+			<source ref="id130"/>
+			<target ref="id129"/>
+			<label kind="guard" x="-517" y="-184">user_articles[0]&lt;max_art</label>
+			<label kind="synchronisation" x="-492" y="-170">add_ar!</label>
+			<label kind="assignment" x="-510" y="-153">cu=0</label>
+			<label kind="comments" x="-833" y="-169">number of articles for this user is limited to 2.</label>
+			<nail x="-283" y="-150"/>
+			<nail x="-528" y="-149"/>
+		</transition>
+		<transition>
+			<source ref="id131"/>
+			<target ref="id130"/>
+			<label kind="synchronisation" x="-414" y="65">deleted_cmt?</label>
+			<nail x="-277" y="89"/>
+		</transition>
+		<transition>
+			<source ref="id132"/>
+			<target ref="id131"/>
+			<label kind="synchronisation" x="-531" y="69">dele_cmt!</label>
+			<label kind="assignment" x="-524" y="89">cu=0</label>
+			<nail x="-542" y="91"/>
+		</transition>
+		<transition>
+			<source ref="id132"/>
+			<target ref="id130"/>
+			<label kind="synchronisation" x="-538" y="-94">cancel!</label>
+			<label kind="assignment" x="-534" y="-78">cu=0</label>
+			<nail x="-538" y="-124"/>
+			<nail x="-293" y="-128"/>
+		</transition>
+		<transition>
+			<source ref="id133"/>
+			<target ref="id134"/>
+			<label kind="synchronisation" x="-105" y="-9">access_ar?</label>
+		</transition>
+		<transition>
+			<source ref="id130"/>
+			<target ref="id133"/>
+			<label kind="select" x="-236" y="-82">u:int[0,1]</label>
+			<label kind="guard" x="-237" y="-61">article_array4[u]&gt;0</label>
+			<label kind="synchronisation" x="-237" y="-42">manage_ar!</label>
+			<label kind="assignment" x="-238" y="-18">su=u,
+cu=0</label>
+		</transition>
+		<transition>
+			<source ref="id135"/>
+			<target ref="id132"/>
+			<label kind="synchronisation" x="-539" y="-16">access_cmt?</label>
+		</transition>
+		<transition>
+			<source ref="id130"/>
+			<target ref="id135"/>
+			<label kind="select" x="-421" y="-118">u:int[0,1],
+com:int[0,1]</label>
+			<label kind="guard" x="-422" y="-61">cmt_array4[u][com]&gt;0</label>
+			<label kind="synchronisation" x="-423" y="-41">manage_cmt!</label>
+			<label kind="assignment" x="-423" y="-19">cu=0,
+su=u, 
+sc=com</label>
+		</transition>
+		<transition>
+			<source ref="id136"/>
+			<target ref="id130"/>
+			<label kind="synchronisation" x="-246" y="-162">added_cmt?</label>
+			<nail x="-252" y="-170"/>
+		</transition>
+		<transition>
+			<source ref="id134"/>
+			<target ref="id136"/>
+			<label kind="guard" x="-162" y="-190">numOfComInArt4[su]&lt;2</label>
+			<label kind="synchronisation" x="-114" y="-169">add_cmt!</label>
+			<label kind="comments" x="25" y="-152">number of comments in an article can not exceed more than 2.</label>
+			<nail x="-28" y="-171"/>
+		</transition>
+		<transition>
+			<source ref="id134"/>
+			<target ref="id130"/>
+			<label kind="synchronisation" x="-124" y="-101">cancel!</label>
+			<nail x="-33" y="-105"/>
+			<nail x="-239" y="-107"/>
+		</transition>
+		<transition>
+			<source ref="id137"/>
+			<target ref="id130"/>
+			<label kind="synchronisation" x="-346" y="-205">deleted_ar?</label>
+			<nail x="-315" y="-205"/>
+			<nail x="-358" y="-205"/>
+			<nail x="-352" y="-179"/>
+			<nail x="-269" y="-178"/>
+		</transition>
+		<transition>
+			<source ref="id134"/>
+			<target ref="id137"/>
+			<label kind="synchronisation" x="-218" y="-229">delete_ar!</label>
+			<label kind="assignment" x="-75" y="-206">cu=0</label>
+			<nail x="-17" y="-206"/>
+			<nail x="-93" y="-207"/>
+		</transition>
+	</template>
+	<template>
+		<name>M4U1</name>
+		<location id="id138" x="-532" y="-164">
+		</location>
+		<location id="id139" x="-257" y="-18">
+		</location>
+		<location id="id140" x="-438" y="56">
+		</location>
+		<location id="id141" x="-564" y="-16">
+			<committed/>
+		</location>
+		<location id="id142" x="-101" y="-18">
+		</location>
+		<location id="id143" x="-23" y="-18">
+			<committed/>
+		</location>
+		<location id="id144" x="-457" y="-16">
+		</location>
+		<location id="id145" x="-178" y="-150">
+		</location>
+		<location id="id146" x="-259" y="-185">
+		</location>
+		<init ref="id139"/>
+		<transition>
+			<source ref="id138"/>
+			<target ref="id139"/>
+			<label kind="synchronisation" x="-495" y="-187">added_ar?</label>
+			<nail x="-361" y="-165"/>
+			<nail x="-364" y="-140"/>
+			<nail x="-280" y="-141"/>
+		</transition>
+		<transition>
+			<source ref="id139"/>
+			<target ref="id138"/>
+			<label kind="guard" x="-520" y="-164">user_articles[1]&lt;max_art</label>
+			<label kind="synchronisation" x="-495" y="-150">add_ar!</label>
+			<label kind="assignment" x="-513" y="-133">cu=1</label>
+			<label kind="comments" x="-836" y="-149">number of articles for this user is limited to 2.</label>
+			<nail x="-286" y="-130"/>
+			<nail x="-531" y="-129"/>
+		</transition>
+		<transition>
+			<source ref="id140"/>
+			<target ref="id139"/>
+			<label kind="synchronisation" x="-407" y="26">deleted_cmt?</label>
+			<nail x="-277" y="55"/>
+		</transition>
+		<transition>
+			<source ref="id141"/>
+			<target ref="id140"/>
+			<label kind="synchronisation" x="-534" y="36">dele_cmt!</label>
+			<label kind="assignment" x="-524" y="55">cu=1</label>
+			<nail x="-542" y="57"/>
+		</transition>
+		<transition>
+			<source ref="id141"/>
+			<target ref="id139"/>
+			<label kind="synchronisation" x="-483" y="-116">cancel!</label>
+			<label kind="assignment" x="-523" y="-116">cu=1</label>
+			<nail x="-541" y="-114"/>
+			<nail x="-296" y="-118"/>
+		</transition>
+		<transition>
+			<source ref="id142"/>
+			<target ref="id143"/>
+			<label kind="synchronisation" x="-105" y="-9">access_ar?</label>
+		</transition>
+		<transition>
+			<source ref="id139"/>
+			<target ref="id142"/>
+			<label kind="select" x="-239" y="-91">u:int[0,1]</label>
+			<label kind="guard" x="-239" y="-52">article_array4[u]&gt;0</label>
+			<label kind="synchronisation" x="-238" y="-38">manage_ar!</label>
+			<label kind="assignment" x="-239" y="-18">cu=1,su=u</label>
+		</transition>
+		<transition>
+			<source ref="id144"/>
+			<target ref="id141"/>
+			<label kind="synchronisation" x="-539" y="-16">access_cmt?</label>
+		</transition>
+		<transition>
+			<source ref="id139"/>
+			<target ref="id144"/>
+			<label kind="select" x="-432" y="-110">u:int[0,1],
+com:int[0,1]</label>
+			<label kind="guard" x="-433" y="-57">cmt_array4[u][com]&gt;0</label>
+			<label kind="synchronisation" x="-433" y="-40">manage_cmt!</label>
+			<label kind="assignment" x="-415" y="-21">cu=1,su=u, 
+sc=com</label>
+		</transition>
+		<transition>
+			<source ref="id145"/>
+			<target ref="id139"/>
+			<label kind="synchronisation" x="-249" y="-142">added_cmt?</label>
+			<nail x="-255" y="-150"/>
+		</transition>
+		<transition>
+			<source ref="id143"/>
+			<target ref="id145"/>
+			<label kind="guard" x="-165" y="-170">numOfComInArt4[su]&lt;2</label>
+			<label kind="synchronisation" x="-117" y="-149">add_cmt!</label>
+			<label kind="comments" x="-19" y="-61">number of comments in an article can not exceed more than 2.</label>
+			<nail x="-31" y="-151"/>
+		</transition>
+		<transition>
+			<source ref="id143"/>
+			<target ref="id139"/>
+			<label kind="synchronisation" x="-164" y="-129">cancel!</label>
+			<nail x="-36" y="-108"/>
+			<nail x="-242" y="-110"/>
+		</transition>
+		<transition>
+			<source ref="id146"/>
+			<target ref="id139"/>
+			<label kind="synchronisation" x="-345" y="-181">deleted_ar?</label>
+			<nail x="-311" y="-184"/>
+			<nail x="-354" y="-184"/>
+			<nail x="-348" y="-158"/>
+			<nail x="-265" y="-157"/>
+		</transition>
+		<transition>
+			<source ref="id143"/>
+			<target ref="id146"/>
+			<label kind="synchronisation" x="-221" y="-209">delete_ar!</label>
+			<label kind="assignment" x="-78" y="-186">cu=1</label>
+			<nail x="-20" y="-186"/>
+			<nail x="-96" y="-187"/>
+		</transition>
+	</template>
+	<template>
+		<name>m5_u1</name>
+		<location id="id147" x="-104" y="40">
+		</location>
+		<location id="id148" x="-437" y="73">
+		</location>
+		<location id="id149" x="-533" y="-180">
+		</location>
+		<location id="id150" x="-257" y="-18">
+		</location>
+		<location id="id151" x="-439" y="30">
+		</location>
+		<location id="id152" x="-539" y="-17">
+			<committed/>
+		</location>
+		<location id="id153" x="-108" y="-18">
+		</location>
+		<location id="id154" x="-23" y="-18">
+			<committed/>
+		</location>
+		<location id="id155" x="-457" y="-16">
+		</location>
+		<location id="id156" x="-222" y="-150">
+		</location>
+		<location id="id157" x="-259" y="-185">
+		</location>
+		<init ref="id150"/>
+		<transition>
+			<source ref="id147"/>
+			<target ref="id150"/>
+			<label kind="synchronisation" x="-211" y="17">edited_ar?</label>
+			<nail x="-225" y="41"/>
+		</transition>
+		<transition>
+			<source ref="id154"/>
+			<target ref="id147"/>
+			<label kind="synchronisation" x="-91" y="17">edit_ar!</label>
+			<label kind="assignment" x="-82" y="39">cu=1</label>
+			<nail x="-44" y="40"/>
+		</transition>
+		<transition>
+			<source ref="id148"/>
+			<target ref="id150"/>
+			<label kind="synchronisation" x="-417" y="48">edited_cmt?</label>
+			<nail x="-295" y="73"/>
+		</transition>
+		<transition>
+			<source ref="id152"/>
+			<target ref="id148"/>
+			<label kind="synchronisation" x="-511" y="49">edit_cmt!</label>
+			<label kind="assignment" x="-507" y="73">cu=1</label>
+			<nail x="-514" y="72"/>
+		</transition>
+		<transition>
+			<source ref="id149"/>
+			<target ref="id150"/>
+			<label kind="synchronisation" x="-498" y="-201">added_ar?</label>
+			<nail x="-361" y="-182"/>
+			<nail x="-364" y="-140"/>
+			<nail x="-280" y="-141"/>
+		</transition>
+		<transition>
+			<source ref="id150"/>
+			<target ref="id149"/>
+			<label kind="guard" x="-524" y="-165">user_articles[1]&lt;max_art</label>
+			<label kind="synchronisation" x="-495" y="-150">add_ar!</label>
+			<label kind="assignment" x="-498" y="-133">cu=1</label>
+			<label kind="comments" x="-836" y="-149">number of articles for this user is limited to 2.</label>
+			<nail x="-286" y="-130"/>
+			<nail x="-531" y="-129"/>
+		</transition>
+		<transition>
+			<source ref="id151"/>
+			<target ref="id150"/>
+			<label kind="synchronisation" x="-418" y="9">deleted_cmt?</label>
+			<nail x="-290" y="30"/>
+		</transition>
+		<transition>
+			<source ref="id152"/>
+			<target ref="id151"/>
+			<label kind="synchronisation" x="-521" y="6">dele_cmt!</label>
+			<label kind="assignment" x="-511" y="28">cu=1</label>
+			<nail x="-518" y="30"/>
+		</transition>
+		<transition>
+			<source ref="id152"/>
+			<target ref="id150"/>
+			<label kind="synchronisation" x="-536" y="-107">cancel!</label>
+			<label kind="assignment" x="-531" y="-88">cu=1</label>
+			<nail x="-539" y="-113"/>
+			<nail x="-296" y="-118"/>
+		</transition>
+		<transition>
+			<source ref="id153"/>
+			<target ref="id154"/>
+			<label kind="synchronisation" x="-102" y="-47">access_ar?</label>
+		</transition>
+		<transition>
+			<source ref="id150"/>
+			<target ref="id153"/>
+			<label kind="select" x="-239" y="-91">u:int[0,Users-1],
+a:int[0,max_art-1]</label>
+			<label kind="guard" x="-239" y="-54">article[u][a]&gt;0</label>
+			<label kind="synchronisation" x="-238" y="-38">manage_ar!</label>
+			<label kind="assignment" x="-239" y="-18">cu=1,su=u, sa=a</label>
+		</transition>
+		<transition>
+			<source ref="id155"/>
+			<target ref="id152"/>
+			<label kind="synchronisation" x="-533" y="-51">access_cmt?</label>
+		</transition>
+		<transition>
+			<source ref="id150"/>
+			<target ref="id155"/>
+			<label kind="select" x="-432" y="-110">u:int[0,Users-1],
+com:int[0,N-1],
+a:int[0,max_art-1]</label>
+			<label kind="guard" x="-433" y="-57">Comment[u][a][com]&gt;0</label>
+			<label kind="synchronisation" x="-433" y="-40">manage_cmt!</label>
+			<label kind="assignment" x="-434" y="-18">cu=1,su=u,sc=com, sa=a</label>
+		</transition>
+		<transition>
+			<source ref="id156"/>
+			<target ref="id150"/>
+			<label kind="synchronisation" x="-254" y="-142">added_cmt?</label>
+			<nail x="-255" y="-150"/>
+		</transition>
+		<transition>
+			<source ref="id154"/>
+			<target ref="id156"/>
+			<label kind="guard" x="-216" y="-177">numOfComInArticle[su][sa]&lt;max_art</label>
+			<label kind="synchronisation" x="-117" y="-149">add_cmt!</label>
+			<label kind="comments" x="-19" y="-61">number of comments in an article can not exceed more than 2.</label>
+			<nail x="-31" y="-151"/>
+		</transition>
+		<transition>
+			<source ref="id154"/>
+			<target ref="id150"/>
+			<label kind="synchronisation" x="-116" y="-109">cancel!</label>
+			<nail x="-36" y="-108"/>
+			<nail x="-242" y="-110"/>
+		</transition>
+		<transition>
+			<source ref="id157"/>
+			<target ref="id150"/>
+			<label kind="synchronisation" x="-345" y="-181">deleted_ar?</label>
+			<nail x="-311" y="-184"/>
+			<nail x="-354" y="-184"/>
+			<nail x="-351" y="-156"/>
+			<nail x="-265" y="-157"/>
+		</transition>
+		<transition>
+			<source ref="id154"/>
+			<target ref="id157"/>
+			<label kind="synchronisation" x="-241" y="-219">delete_ar!</label>
+			<label kind="assignment" x="-238" y="-205">cu=1</label>
+			<nail x="-20" y="-186"/>
+			<nail x="-96" y="-187"/>
+		</transition>
+	</template>
+	<template>
+		<name>m5_u0</name>
+		<location id="id158" x="721" y="271">
+		</location>
+		<location id="id159" x="403" y="272">
+		</location>
+		<location id="id160" x="315" y="17">
+		</location>
+		<location id="id161" x="588" y="199">
+		</location>
+		<location id="id162" x="402" y="239">
+		</location>
+		<location id="id163" x="311" y="201">
+			<committed/>
+		</location>
+		<location id="id164" x="738" y="197">
+		</location>
+		<location id="id165" x="822" y="196">
+			<committed/>
+		</location>
+		<location id="id166" x="403" y="199">
+		</location>
+		<location id="id167" x="624" y="48">
+		</location>
+		<location id="id168" x="589" y="12">
+		</location>
+		<init ref="id161"/>
+		<transition>
+			<source ref="id158"/>
+			<target ref="id161"/>
+			<label kind="synchronisation" x="633" y="236">edited_ar?</label>
+			<nail x="617" y="272"/>
+		</transition>
+		<transition>
+			<source ref="id165"/>
+			<target ref="id158"/>
+			<label kind="synchronisation" x="748" y="238">edit_ar!</label>
+			<label kind="assignment" x="750" y="254">cu=0</label>
+			<nail x="794" y="271"/>
+		</transition>
+		<transition>
+			<source ref="id159"/>
+			<target ref="id161"/>
+			<label kind="synchronisation" x="421" y="275">edited_cmt?</label>
+			<nail x="570" y="272"/>
+		</transition>
+		<transition>
+			<source ref="id163"/>
+			<target ref="id159"/>
+			<label kind="synchronisation" x="320" y="255">edit_cmt!</label>
+			<label kind="assignment" x="326" y="272">cu=0</label>
+			<nail x="311" y="272"/>
+		</transition>
+		<transition>
+			<source ref="id160"/>
+			<target ref="id161"/>
+			<label kind="synchronisation" x="342" y="-4">added_ar?</label>
+			<nail x="471" y="18"/>
+			<nail x="487" y="57"/>
+			<nail x="566" y="57"/>
+		</transition>
+		<transition>
+			<source ref="id161"/>
+			<target ref="id160"/>
+			<label kind="guard" x="323" y="32">user_articles[0]&lt;max_art</label>
+			<label kind="synchronisation" x="353" y="47">add_ar!</label>
+			<label kind="assignment" x="358" y="66">cu=0</label>
+			<label kind="comments" x="12" y="48">number of articles for this user is limited to 2.</label>
+			<nail x="562" y="67"/>
+			<nail x="317" y="68"/>
+		</transition>
+		<transition>
+			<source ref="id162"/>
+			<target ref="id161"/>
+			<label kind="synchronisation" x="421" y="237">deleted_cmt?</label>
+			<nail x="568" y="238"/>
+		</transition>
+		<transition>
+			<source ref="id163"/>
+			<target ref="id162"/>
+			<label kind="synchronisation" x="323" y="218">dele_cmt!</label>
+			<label kind="assignment" x="329" y="237">cu=0</label>
+			<nail x="321" y="239"/>
+		</transition>
+		<transition>
+			<source ref="id163"/>
+			<target ref="id161"/>
+			<label kind="synchronisation" x="317" y="115">cancel!</label>
+			<label kind="assignment" x="320" y="128">cu=0</label>
+			<nail x="312" y="95"/>
+			<nail x="551" y="96"/>
+		</transition>
+		<transition>
+			<source ref="id164"/>
+			<target ref="id165"/>
+			<label kind="synchronisation" x="744" y="167">access_ar?</label>
+		</transition>
+		<transition>
+			<source ref="id161"/>
+			<target ref="id164"/>
+			<label kind="select" x="609" y="116">u:int[0,Users-1], 
+a:int[0,max_art-1]</label>
+			<label kind="guard" x="608" y="156">article[u][a]&gt;0</label>
+			<label kind="synchronisation" x="608" y="175">manage_ar!</label>
+			<label kind="assignment" x="607" y="199">su=u,cu=0,sa=a</label>
+		</transition>
+		<transition>
+			<source ref="id166"/>
+			<target ref="id163"/>
+			<label kind="synchronisation" x="320" y="175">access_cmt?</label>
+		</transition>
+		<transition>
+			<source ref="id161"/>
+			<target ref="id166"/>
+			<label kind="select" x="424" y="99">u:int[0,Users-1],
+com:int[0,N-1],
+a:int[0,max_art-1]</label>
+			<label kind="guard" x="418" y="156">Comment[u][a][com]&gt;0</label>
+			<label kind="synchronisation" x="422" y="176">manage_cmt!</label>
+			<label kind="assignment" x="422" y="198">cu=0,su=u,sc=com,sa=a</label>
+		</transition>
+		<transition>
+			<source ref="id167"/>
+			<target ref="id161"/>
+			<label kind="synchronisation" x="589" y="63">added_cmt?</label>
+			<nail x="593" y="47"/>
+		</transition>
+		<transition>
+			<source ref="id165"/>
+			<target ref="id167"/>
+			<label kind="guard" x="632" y="23">numOfComInArticle[su][sa]&lt;max_art</label>
+			<label kind="synchronisation" x="700" y="48">add_cmt!</label>
+			<label kind="comments" x="870" y="65">number of comments in an article can not exceed more than 2.</label>
+			<nail x="817" y="46"/>
+		</transition>
+		<transition>
+			<source ref="id165"/>
+			<target ref="id161"/>
+			<label kind="synchronisation" x="720" y="77">cancel!</label>
+			<nail x="808" y="100"/>
+			<nail x="602" y="98"/>
+		</transition>
+		<transition>
+			<source ref="id168"/>
+			<target ref="id161"/>
+			<label kind="synchronisation" x="499" y="12">deleted_ar?</label>
+			<nail x="530" y="12"/>
+			<nail x="487" y="12"/>
+			<nail x="493" y="38"/>
+			<nail x="576" y="39"/>
+		</transition>
+		<transition>
+			<source ref="id165"/>
+			<target ref="id168"/>
+			<label kind="synchronisation" x="631" y="-30">delete_ar!</label>
+			<label kind="assignment" x="634" y="-9">cu=0</label>
+			<nail x="823" y="11"/>
+			<nail x="752" y="10"/>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+
+
+/*Reader0= reader_1Art_1cmt();
+User0=user_1Art_1cmt();
+// refinement 1
+Reader1=reader_1Art_MulCmt();
+User1=user_1Art_mulCmt();*/
+/*refinement2*/
+blogger=M2u0();
+reader=M2u1();
+//Blog=SUT2();
+
+//refinement 3
+//M3User1=M3u1_multi_one();
+//M3User2=M3u0_multi_one();
+User1=m5_u0();
+User2=m5_u1();
+Blog=SUT5();
+
+
+
+//system M0_u1,M0_r1,SUT;
+//system User1,Reader1,SUT1;
+//system blogger,reader,Blog;
+//system M3User1,M3User2,SUT3;
+//system M4U0,M4U1,SUT4;
+system Blog,User1,User2;</system>
+</nta>
