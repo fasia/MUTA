@@ -85,6 +85,7 @@ def main(argv):
     #IR(inputfile[:-4],templatename,queryfile)
     #RG(inputfile[:-4],templatename)
     CGL(inputfile[:-4],templatename)
+    CGV(inputfile[:-4],templatename)
 #--------------------------- HOM ----------------------------#
     #STS(inputfile[:-4], templatename)
     #CTN(inputfile[:-4], templatename)
@@ -386,7 +387,7 @@ def RG(inp, tem):
 #Change Guard logical Operators
 def CGL(inp,tem):
     timerStart = datetime.datetime.now()
-    #logger.info('CG (+1) started.')
+    logger.info('CGL started.')
     for t in root.findall('template'): # find all templates
         if t.find('name').text==tem: # find the template that we want
             locations = [loc.attrib['id'] for loc in t.findall('location')] # get the locations of the template
@@ -395,51 +396,97 @@ def CGL(inp,tem):
             guardsList= t.findall("transition/label[@kind='guard']")
             for k in range(len(guardsList)): # for each guard make a mutant
                 for j in ['==','!=','>','<','=<','>=']:
-                    MyName =inp+'MUT_CG'+str(k)+'_'+str(h)+'.xml'
-                    tree.write(MyName)
-                    treex = ET.parse(MyName)
-                    rootx = treex.getroot()
-                    for txx in rootx.findall('template'):
-                        if txx.find('name').text==tem:
-                            guards=txx.findall("transition/label[@kind='guard']")
-                            #print 'guards:', guards
-                            # change the guard
-                            print 'guard is:', guards[k].text
-                            s= guards[k].text
-                            if re.search(j,s):
-                                print 'it is a j',
-                                replaced= re.sub(j,'!=',s)
-                                guards[k].text= replaced
-                                print 'repl is  ',guards[k].text, MyName
-                                treex.write(MyName)
+                    for j2 in ['==','!=','>','<','=<','>=']:
+                        MyName =inp+'MUT_CGL'+str(k)+'_'+str(h)+'.xml'
+                        tree.write(MyName)
+                        treex = ET.parse(MyName)
+                        rootx = treex.getroot()
+                        for txx in rootx.findall('template'):
+                            if txx.find('name').text==tem:
+                                guards=txx.findall("transition/label[@kind='guard']")
+                                #print 'guards:', guards
+                                # change the guard
+                               # print 'guard is:', guards[k].text
+                                s= guards[k].text
+                                if re.search(j,s) and j!=j2:
+                                    print 'it is a j', j, 'j2 is', j2
+                                    replaced= re.sub(j,j2,s)
+                                    guards[k].text= replaced
+                                    print 'repl is  ',guards[k].text, MyName
+                                    h=h+1
+                                    # reachability settings
+                                    # assignment = txx.find[tr].find("label[@kind='assignment']")
+                                    # if assignment != None:
+                                    #     assignment.text += ',\ntrap=true'
+                                    #     # print "in the assignment setting- if"
+                                    # else:
+                                    #     # ele = selectedTransition.find("transition[" + str(tr) + "]")
+                                    #     assignmentAttrib = {"kind": "assignment", "x": "-20", "y": "-20"}
+                                    #     item = ET.Element("label")
+                                    #     item.text = "trap=true"
+                                    #     item.attrib = assignmentAttrib
+                                    #     selectedTransition.insert(3, item)
+                                    treex.write(MyName)
+                                    if CheckQuery(False,MyName):
+                                        Change_dir(MyName,'yes')
+                                    else:
+                                        Change_dir(MyName,'no')
+    timerStop = datetime.datetime.now()
+    te = timerStop - timerStart
+    logger.info('CGL finnished.')
+    logger.info(te)
 
-
-                            # reachability settings
-
-                            # assignment = transitionstest[tr].find("label[@kind='assignment']")
-                            # if assignment != None:
-                            #     assignment.text += ',\ntrap=true'
-                            #     # print "in the assignment setting- if"
-                            # else:
-                            #     # ele = selectedTransition.find("transition[" + str(tr) + "]")
-                            #     assignmentAttrib = {"kind": "assignment", "x": "-20", "y": "-20"}
-                            #     item = ET.Element("label")
-                            #     item.text = "trap=true"
-                            #     item.attrib = assignmentAttrib
-                            #     selectedTransition.insert(3, item)
-
-                            # treex.write(MyName)
-                            #
-                            #
-                            # if CheckQuery(True,MyName):
-                            #     Change_dir(MyName,'yes')
-                            # else:
-                            #     Change_dir(MyName,'no')
-
-    # timerStop = datetime.datetime.now()
-    # te = timerStop - timerStart
-    #logger.info('CG (+1) finnished.')
-    #logger.info(te)
+#Change Guard Values
+def CGV(inp,tem):
+    timerStart = datetime.datetime.now()
+    logger.info('CGV started.')
+    for t in root.findall('template'): # find all templates
+        if t.find('name').text==tem: # find the template that we want
+            locations = [loc.attrib['id'] for loc in t.findall('location')] # get the locations of the template
+            print 'locations', locations
+            h=0
+            guardsList= t.findall("transition/label[@kind='guard']")
+            for k in range(len(guardsList)): # for each guard make a mutant
+                for j in ['0','[a]','[com]','[u]','[sa]','[su]','[max_art]']:
+                    for j2 in ['+1','-1','0','[a]','[com]','[u]','[su]','[sa]','[max_art]']:
+                        MyName =inp+'MUT_CGV'+str(k)+'_'+str(h)+'.xml'
+                        tree.write(MyName)
+                        treex = ET.parse(MyName)
+                        rootx = treex.getroot()
+                        for txx in rootx.findall('template'):
+                            if txx.find('name').text==tem:
+                                guards=txx.findall("transition/label[@kind='guard']")
+                                #print 'guards:', guards
+                                # change the guard
+                               # print 'guard is:', guards[k].text
+                                s= guards[k].text
+                                if re.search(j,s) and j!=j2:
+                                    print 'it is a j', j, 'j2 is', j2
+                                    replaced= re.sub(j,j2,s)
+                                    guards[k].text= replaced
+                                    print 'repl is  ',guards[k].text, MyName
+                                    h=h+1
+                                    # reachability settings
+                                    # assignment = txx.find[tr].find("label[@kind='assignment']")
+                                    # if assignment != None:
+                                    #     assignment.text += ',\ntrap=true'
+                                    #     # print "in the assignment setting- if"
+                                    # else:
+                                    #     # ele = selectedTransition.find("transition[" + str(tr) + "]")
+                                    #     assignmentAttrib = {"kind": "assignment", "x": "-20", "y": "-20"}
+                                    #     item = ET.Element("label")
+                                    #     item.text = "trap=true"
+                                    #     item.attrib = assignmentAttrib
+                                    #     selectedTransition.insert(3, item)
+                                    treex.write(MyName)
+                                    if CheckQuery(False,MyName):
+                                        Change_dir(MyName,'yes')
+                                    else:
+                                        Change_dir(MyName,'no')
+    timerStop = datetime.datetime.now()
+    te = timerStop - timerStart
+    logger.info('CGV finnished.')
+    logger.info(te)
 
 #Negate Gurad
 def NG(inp,tem,que):
