@@ -30,12 +30,12 @@ EIG : Exchange Invariant and Guard
 To run µUTA tool:
 
 - open cmd in µUTA folder
-- write mut_opt.py -i <inputfile.xml> -t <name of the template for mutation>
+- write muUTA.py -i <inputfile.xml> -t <name of the template for mutation>
 
 it will make two folders one for valid models and one for invalid models. 
 
 ********************************
-example:mut_opt.py -i LightContr.xml -t Interface 
+example:muUTA.py -i LightContr.xml -t Interface 
 
 ********************************
 
