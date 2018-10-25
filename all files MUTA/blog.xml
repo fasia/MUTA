@@ -1,0 +1,966 @@
+<<<<<<< Updated upstream
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_1.dtd'>
+<nta>
+=======
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_1.dtd'>
+<nta>
+>>>>>>> Stashed changes
+	<declaration>// Place global declarations here.
+//input channels to blog
+chan log_in,logOut;
+chan create_prof;
+chan delete_cmt, add_cmt,edit_cmt;
+chan manage_cmt, manage_ar,manage_prof;
+chan add_ar, delete_ar,edit_ar;
+
+//output channels from blog
+chan login_failed,logged_in,logged_out;
+chan prof_failed, new_prof;
+chan deleted_cmt,added_cmt,edited_cmt;
+chan access_ar, access_cmt, access_prof;
+chan added_ar,deleted_ar, edited_ar, access_denied;
+
+bool reader=false;
+bool new_user = false;
+clock timer;
+bool t=false;
+<<<<<<< Updated upstream
+bool tra[20];
+bool trap =false;
+
+</declaration>
+	<template>
+		<name>user</name>
+		<location id="id0" x="-416" y="136">
+		</location>
+		<location id="id1" x="-303" y="-59">
+		</location>
+		<location id="id2" x="-460" y="73">
+		</location>
+		<location id="id3" x="-229" y="187">
+		</location>
+		<location id="id4" x="-229" y="17">
+		</location>
+		<location id="id5" x="-399" y="17">
+		</location>
+		<location id="id6" x="-399" y="-195">
+		</location>
+		<location id="id7" x="-399" y="-85">
+		</location>
+		<location id="id8" x="-51" y="17">
+		</location>
+		<location id="id9" x="-229" y="-122">
+		</location>
+		<init ref="id7"/>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="-360" y="-31">logged_out?</label>
+			<nail x="-372" y="-16"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-186" y="22">access_denied?</label>
+			<nail x="-102" y="51"/>
+			<nail x="-161" y="51"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-290" y="117">access_denied?</label>
+			<nail x="-259" y="137"/>
+			<nail x="-261" y="67"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="-374" y="-85">logged_out?</label>
+			<nail x="-374" y="-59"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-290" y="-47">logOut!</label>
+			<nail x="-246" y="-59"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="-324" y="-108">manage_prof!</label>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-509" y="86">added_cmt?</label>
+			<nail x="-433" y="85"/>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="-442" y="-161">create_prof!</label>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="-535" y="42">add_cmt!</label>
+			<nail x="-458" y="42"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-168" y="-28">edited_cmt?</label>
+			<nail x="-93" y="-8"/>
+			<nail x="-187" y="-8"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-136" y="65">edit_cmt!</label>
+			<nail x="-85" y="59"/>
+			<nail x="-68" y="85"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-329" y="78">edited_ar?</label>
+			<nail x="-314" y="144"/>
+			<nail x="-314" y="76"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-178" y="229">edit_ar!</label>
+			<nail x="-212" y="246"/>
+			<nail x="-178" y="229"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-120" y="116">deleted_ar?</label>
+			<nail x="-124" y="141"/>
+			<nail x="-124" y="90"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-161" y="194">delete_ar!</label>
+			<nail x="-178" y="221"/>
+			<nail x="-161" y="187"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-399" y="136">added_ar?</label>
+			<nail x="-331" y="136"/>
+			<nail x="-331" y="68"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-344" y="206">access_ar?</label>
+			<nail x="-280" y="229"/>
+			<nail x="-238" y="246"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-417" y="92">add_ar!</label>
+			<nail x="-399" y="85"/>
+			<nail x="-416" y="93"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-218" y="89">manage_ar!</label>
+			<nail x="-162" y="91"/>
+			<nail x="-162" y="135"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-176" y="-5">manage_cmt!</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-374" y="-4">logged_in?</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="-527" y="-51">login_failed?</label>
+			<nail x="-416" y="17"/>
+			<nail x="-467" y="8"/>
+			<nail x="-467" y="-77"/>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="-425" y="-51">log_in!</label>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="-324" y="-159">prof_failed?</label>
+			<nail x="-331" y="-178"/>
+			<nail x="-331" y="-102"/>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="-484" y="-212">new_prof?</label>
+			<nail x="-467" y="-178"/>
+			<nail x="-467" y="-102"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-169" y="-58">deleted_cmt?</label>
+			<nail x="-85" y="-34"/>
+			<nail x="-170" y="-34"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-51" y="76">delete_cmt!</label>
+			<nail x="-42" y="76"/>
+			<nail x="-8" y="51"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-59" y="-25">access_cmt?</label>
+			<nail x="8" y="-8"/>
+			<nail x="17" y="26"/>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-159" y="-103">access_prof?</label>
+			<nail x="-169" y="-122"/>
+			<nail x="-170" y="-68"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">blog</name>
+=======
+bool trap[20];
+
+</declaration>
+	<template>
+		<name>user</name>
+		<location id="id0" x="-416" y="136">
+		</location>
+		<location id="id1" x="-289" y="-59">
+		</location>
+		<location id="id2" x="-484" y="85">
+		</location>
+		<location id="id3" x="-229" y="187">
+		</location>
+		<location id="id4" x="-229" y="17">
+		</location>
+		<location id="id5" x="-399" y="17">
+		</location>
+		<location id="id6" x="-399" y="-195">
+		</location>
+		<location id="id7" x="-399" y="-85">
+		</location>
+		<location id="id8" x="-51" y="17">
+		</location>
+		<location id="id9" x="-195" y="-119">
+		</location>
+		<init ref="id7"/>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="-381" y="-51">logged_out?</label>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-211" y="17">access_denied?</label>
+			<nail x="-102" y="51"/>
+			<nail x="-161" y="51"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-250" y="144">access_denied?</label>
+			<nail x="-272" y="136"/>
+			<nail x="-272" y="68"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="-374" y="-85">logged_out?</label>
+			<nail x="-374" y="-59"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-272" y="-85">logOut!</label>
+			<nail x="-246" y="-59"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="-297" y="-119">manage_prof!</label>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-501" y="93">added_cmt?</label>
+			<nail x="-433" y="85"/>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="-442" y="-161">create_prof!</label>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="-535" y="42">add_cmt!</label>
+			<nail x="-458" y="42"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-178" y="-8">edited_cmt?</label>
+			<nail x="-93" y="-8"/>
+			<nail x="-187" y="-8"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-145" y="34">edit_cmt!</label>
+			<nail x="-85" y="59"/>
+			<nail x="-68" y="85"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-365" y="153">edited_ar?</label>
+			<nail x="-314" y="144"/>
+			<nail x="-314" y="76"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-178" y="229">edit_ar!</label>
+			<nail x="-212" y="246"/>
+			<nail x="-178" y="229"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-221" y="93">deleted_ar?</label>
+			<nail x="-170" y="127"/>
+			<nail x="-170" y="76"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-178" y="204">delete_ar!</label>
+			<nail x="-178" y="221"/>
+			<nail x="-161" y="187"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-399" y="136">added_ar?</label>
+			<nail x="-331" y="136"/>
+			<nail x="-331" y="68"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-331" y="221">access_ar?</label>
+			<nail x="-280" y="229"/>
+			<nail x="-238" y="246"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-408" y="85">add_ar!</label>
+			<nail x="-399" y="85"/>
+			<nail x="-416" y="93"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-263" y="59">manage_ar!</label>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-178" y="17">manage_cmt!</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-357" y="0">logged_in?</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="-527" y="-51">login_failed?</label>
+			<nail x="-416" y="17"/>
+			<nail x="-467" y="8"/>
+			<nail x="-467" y="-77"/>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="-425" y="-51">log_in!</label>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="-331" y="-195">prof_failed?</label>
+			<nail x="-331" y="-178"/>
+			<nail x="-331" y="-102"/>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="-484" y="-212">new_prof?</label>
+			<nail x="-467" y="-178"/>
+			<nail x="-467" y="-102"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-178" y="-34">deleted_cmt?</label>
+			<nail x="-85" y="-34"/>
+			<nail x="-170" y="-34"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-51" y="76">delete_cmt!</label>
+			<nail x="-42" y="76"/>
+			<nail x="-8" y="51"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-59" y="-25">access_cmt?</label>
+			<nail x="8" y="-8"/>
+			<nail x="17" y="26"/>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-178" y="-127">access_prof?</label>
+			<nail x="-153" y="-93"/>
+			<nail x="-170" y="-68"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">blog</name>
+>>>>>>> Stashed changes
+		<declaration>// Place local declarations here.
+
+void m(){
+int i;
+for( i =0; i&lt;20; i++){
+<<<<<<< Updated upstream
+tra[i]=false;
+}
+}</declaration>
+		<location id="id10" x="-176" y="-105">
+			<name x="-167" y="-100">id32</name>
+		</location>
+		<location id="id11" x="-229" y="25">
+			<name x="-244" y="35">id33</name>
+		</location>
+		<location id="id12" x="-151" y="121">
+			<name x="-163" y="129">id34</name>
+		</location>
+		<location id="id13" x="189" y="121">
+			<name x="171" y="132">id35</name>
+		</location>
+		<location id="id14" x="102" y="208">
+			<name x="63" y="205">id36</name>
+		</location>
+		<location id="id15" x="88" y="-200">
+			<name x="78" y="-234">id37</name>
+		</location>
+		<location id="id16" x="351" y="-203">
+			<name x="341" y="-237">id38</name>
+		</location>
+		<location id="id17" x="100" y="121">
+			<name x="64" y="127">id39</name>
+		</location>
+		<location id="id18" x="245" y="-202">
+			<name x="235" y="-236">id40</name>
+		</location>
+		<location id="id19" x="-187" y="-51">
+			<name x="-197" y="-85">id41</name>
+		</location>
+		<location id="id20" x="-72" y="-198">
+			<name x="-84" y="-188">id42</name>
+		</location>
+		<location id="id21" x="10" y="120">
+			<name x="17" y="126">id43</name>
+		</location>
+		<location id="id22" x="247" y="-124">
+			<name x="265" y="-135">id44</name>
+		</location>
+		<location id="id23" x="-305" y="-196">
+			<name x="-337" y="-188">id45</name>
+		</location>
+		<location id="id24" x="8" y="-51">
+			<name x="8" y="-38">id46</name>
+			<label kind="invariant" x="27" y="-72">timer&lt;10</label>
+		</location>
+		<location id="id25" x="-306" y="-51">
+			<name x="-343" y="-44">id47</name>
+		</location>
+		<init ref="id25"/>
+		<transition>
+			<source ref="id21"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="-90" y="132">access_denied!</label>
+			<label kind="assignment" x="-92" y="149">timer=0</label>
+			<nail x="-48" y="121"/>
+			<nail x="-5" y="-28"/>
+		</transition>
+		<transition>
+			<source ref="id22"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="107" y="-147">access_denied!</label>
+			<label kind="assignment" x="108" y="-126">timer =0</label>
+			<nail x="79" y="-125"/>
+			<nail x="53" y="-98"/>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id25"/>
+			<label kind="synchronisation" x="-258" y="-130">logged_out!</label>
+			<nail x="-258" y="-103"/>
+		</transition>
+		<transition>
+			<source ref="id24"/>
+			<target ref="id10"/>
+			<label kind="guard" x="-153" y="-137">timer&lt;10</label>
+			<label kind="synchronisation" x="-148" y="-124">logOut?</label>
+			<nail x="-75" y="-103"/>
+			<nail x="-109" y="-103"/>
+			<nail x="-154" y="-102"/>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="-209" y="7">added_cmt!</label>
+			<label kind="assignment" x="-186" y="25">timer=0</label>
+			<nail x="-130" y="26"/>
+			<nail x="-130" y="1"/>
+		</transition>
+		<transition>
+			<source ref="id24"/>
+			<target ref="id11"/>
+			<label kind="guard" x="-190" y="-31">timer&lt;10</label>
+			<label kind="synchronisation" x="-193" y="-14">add_cmt?</label>
+			<nail x="-119" y="-12"/>
+			<nail x="-226" y="-12"/>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="-217" y="67">added_ar!</label>
+			<label kind="assignment" x="-205" y="84">timer =0</label>
+			<nail x="-151" y="70"/>
+			<nail x="-68" y="-2"/>
+		</transition>
+		<transition>
+			<source ref="id24"/>
+			<target ref="id12"/>
+			<label kind="guard" x="-132" y="81">timer&lt;10</label>
+			<label kind="synchronisation" x="-132" y="98">add_ar?</label>
+			<nail x="-75" y="120"/>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="112" y="32">deleted_ar!</label>
+			<label kind="assignment" x="117" y="50">timer =0</label>
+			<nail x="189" y="35"/>
+			<nail x="147" y="14"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id13"/>
+			<label kind="synchronisation" x="107" y="91">delete_ar?</label>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="163" y="182">edited_ar!</label>
+			<label kind="assignment" x="166" y="206">timer =0</label>
+			<nail x="242" y="204"/>
+			<nail x="241" y="30"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id14"/>
+			<label kind="synchronisation" x="105" y="150">edit_ar?</label>
+		</transition>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="254" y="-49">edited_cmt!</label>
+			<label kind="assignment" x="252" y="-26">timer =0</label>
+			<nail x="351" y="-25"/>
+			<nail x="88" y="-28"/>
+		</transition>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="20" y="-171">deleted_cmt!</label>
+			<label kind="assignment" x="21" y="-157">timer =0</label>
+			<nail x="23" y="-199"/>
+		</transition>
+		<transition>
+			<source ref="id18"/>
+			<target ref="id15"/>
+			<label kind="synchronisation" x="116" y="-226">delete_cmt?</label>
+		</transition>
+		<transition>
+			<source ref="id18"/>
+			<target ref="id16"/>
+			<label kind="synchronisation" x="266" y="-227">edit_cmt?</label>
+		</transition>
+		<transition>
+			<source ref="id21"/>
+			<target ref="id17"/>
+			<label kind="synchronisation" x="23" y="93">access_ar!</label>
+		</transition>
+		<transition>
+			<source ref="id22"/>
+			<target ref="id18"/>
+			<label kind="synchronisation" x="247" y="-172">access_cmt!</label>
+		</transition>
+		<transition>
+			<source ref="id20"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="-183" y="-221">access_prof!</label>
+			<label kind="assignment" x="-183" y="-204">timer=0</label>
+			<nail x="-135" y="-197"/>
+		</transition>
+		<transition>
+			<source ref="id19"/>
+			<target ref="id25"/>
+			<label kind="synchronisation" x="-283" y="-42">login_failed!</label>
+			<nail x="-203" y="-21"/>
+			<nail x="-288" y="-21"/>
+		</transition>
+		<transition>
+			<source ref="id19"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="-153" y="-73">logged_in!</label>
+			<label kind="assignment" x="-153" y="-54">timer=0</label>
+		</transition>
+		<transition>
+			<source ref="id24"/>
+			<target ref="id22"/>
+			<label kind="guard" x="142" y="-87">timer&lt;10</label>
+			<label kind="synchronisation" x="142" y="-70">manage_cmt?</label>
+			<nail x="249" y="-50"/>
+		</transition>
+		<transition>
+			<source ref="id24"/>
+			<target ref="id21"/>
+			<label kind="guard" x="9" y="20">timer&lt;10</label>
+			<label kind="synchronisation" x="10" y="3">manage_ar?</label>
+			<nail x="8" y="17"/>
+		</transition>
+		<transition>
+			<source ref="id24"/>
+			<target ref="id20"/>
+			<label kind="guard" x="-58" y="-237">timer&lt;10</label>
+			<label kind="synchronisation" x="-58" y="-222">manage_prof?</label>
+			<nail x="-11" y="-198"/>
+		</transition>
+		<transition>
+			<source ref="id23"/>
+			<target ref="id25"/>
+			<label kind="synchronisation" x="-389" y="-220">prof_failed!</label>
+			<nail x="-378" y="-195"/>
+			<nail x="-380" y="-52"/>
+		</transition>
+		<transition>
+			<source ref="id23"/>
+			<target ref="id25"/>
+			<label kind="synchronisation" x="-336" y="-146">new_prof!</label>
+		</transition>
+		<transition>
+			<source ref="id25"/>
+			<target ref="id19"/>
+			<label kind="synchronisation" x="-272" y="-68">log_in?</label>
+			<nail x="-255" y="-51"/>
+		</transition>
+		<transition>
+			<source ref="id25"/>
+			<target ref="id23"/>
+			<label kind="synchronisation" x="-282" y="-218">create_prof?</label>
+			<nail x="-258" y="-124"/>
+			<nail x="-257" y="-196"/>
+		</transition>
+	</template>
+=======
+trap[i]=false;
+}
+}</declaration>
+		<location id="id10" x="-178" y="-110">
+			<name x="-188" y="-144">id32</name>
+		</location>
+		<location id="id11" x="-204" y="25">
+			<name x="-214" y="-9">id33</name>
+		</location>
+		<location id="id12" x="-119" y="93">
+			<name x="-129" y="59">id34</name>
+		</location>
+		<location id="id13" x="110" y="119">
+			<name x="100" y="85">id35</name>
+		</location>
+		<location id="id14" x="8" y="178">
+			<name x="-2" y="144">id36</name>
+		</location>
+		<location id="id15" x="255" y="-110">
+			<name x="245" y="-144">id37</name>
+		</location>
+		<location id="id16" x="348" y="-51">
+			<name x="338" y="-85">id38</name>
+		</location>
+		<location id="id17" x="8" y="119">
+			<name x="-2" y="85">id39</name>
+		</location>
+		<location id="id18" x="255" y="-51">
+			<name x="245" y="-85">id40</name>
+		</location>
+		<location id="id19" x="-187" y="-51">
+			<name x="-197" y="-85">id41</name>
+		</location>
+		<location id="id20" x="8" y="-170">
+			<name x="-2" y="-204">id42</name>
+		</location>
+		<location id="id21" x="8" y="51">
+			<name x="-2" y="17">id43</name>
+		</location>
+		<location id="id22" x="153" y="-51">
+			<name x="143" y="-85">id44</name>
+		</location>
+		<location id="id23" x="-306" y="-170">
+			<name x="-316" y="-204">id45</name>
+		</location>
+		<location id="id24" x="8" y="-51">
+			<name x="8" y="-59">id46</name>
+			<label kind="invariant" x="-2" y="-34">timer&lt;10</label>
+		</location>
+		<location id="id25" x="-306" y="-51">
+			<name x="-316" y="-85">id47</name>
+		</location>
+		<init ref="id25"/>
+		<transition>
+			<source ref="id21"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="238" y="102">access_denied!</label>
+			<label kind="assignment" x="-13" y="0">timer=0</label>
+			<nail x="-34" y="51"/>
+		</transition>
+		<transition>
+			<source ref="id22"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="94" y="-110">access_denied!</label>
+			<label kind="assignment" x="94" y="-93">timer =0</label>
+			<nail x="153" y="-93"/>
+			<nail x="76" y="-93"/>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id25"/>
+			<label kind="synchronisation" x="-246" y="-102">logged_out!</label>
+		</transition>
+		<transition>
+			<source ref="id24"/>
+			<target ref="id10"/>
+			<label kind="guard" x="-144" y="-153">timer&lt;10</label>
+			<label kind="synchronisation" x="-144" y="-136">logOut?</label>
+			<nail x="-51" y="-110"/>
+			<nail x="-85" y="-110"/>
+			<nail x="-153" y="-110"/>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="-178" y="8">added_cmt!</label>
+			<label kind="assignment" x="-186" y="25">timer=0</label>
+			<nail x="-102" y="25"/>
+			<nail x="-102" y="-8"/>
+		</transition>
+		<transition>
+			<source ref="id24"/>
+			<target ref="id11"/>
+			<label kind="guard" x="-170" y="-34">timer&lt;10</label>
+			<label kind="synchronisation" x="-170" y="-17">add_cmt?</label>
+			<nail x="-110" y="-17"/>
+			<nail x="-178" y="-17"/>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="-221" y="51">added_ar!</label>
+			<label kind="assignment" x="-136" y="42">timer =0</label>
+			<nail x="-102" y="42"/>
+			<nail x="-51" y="8"/>
+		</transition>
+		<transition>
+			<source ref="id24"/>
+			<target ref="id12"/>
+			<label kind="guard" x="-101" y="-13">timer&lt;10</label>
+			<label kind="synchronisation" x="-68" y="102">add_ar?</label>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="42" y="34">deleted_ar!</label>
+			<label kind="assignment" x="42" y="51">timer =0</label>
+			<nail x="110" y="76"/>
+			<nail x="110" y="25"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id13"/>
+			<label kind="synchronisation" x="17" y="93">delete_ar?</label>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="136" y="85">edited_ar!</label>
+			<label kind="assignment" x="136" y="102">timer =0</label>
+			<nail x="127" y="178"/>
+			<nail x="127" y="25"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id14"/>
+			<label kind="synchronisation" x="-51" y="136">edit_ar?</label>
+		</transition>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="187" y="-25">edited_cmt!</label>
+			<label kind="assignment" x="187" y="-8">timer =0</label>
+			<nail x="348" y="-25"/>
+			<nail x="60" y="-25"/>
+		</transition>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="127" y="-144">deleted_cmt!</label>
+			<label kind="assignment" x="127" y="-127">timer =0</label>
+			<nail x="77" y="-110"/>
+		</transition>
+		<transition>
+			<source ref="id18"/>
+			<target ref="id15"/>
+			<label kind="synchronisation" x="264" y="-102">delete_cmt?</label>
+		</transition>
+		<transition>
+			<source ref="id18"/>
+			<target ref="id16"/>
+			<label kind="synchronisation" x="263" y="-76">edit_cmt?</label>
+		</transition>
+		<transition>
+			<source ref="id21"/>
+			<target ref="id17"/>
+			<label kind="synchronisation" x="-17" y="68">access_ar!</label>
+		</transition>
+		<transition>
+			<source ref="id22"/>
+			<target ref="id18"/>
+			<label kind="synchronisation" x="162" y="-76">access_cmt!</label>
+		</transition>
+		<transition>
+			<source ref="id20"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="-85" y="-195">access_prof!</label>
+			<label kind="assignment" x="-67" y="-170">timer=0</label>
+			<nail x="-85" y="-170"/>
+		</transition>
+		<transition>
+			<source ref="id19"/>
+			<target ref="id25"/>
+			<label kind="synchronisation" x="-289" y="-34">login_failed!</label>
+			<nail x="-204" y="-8"/>
+			<nail x="-289" y="-8"/>
+		</transition>
+		<transition>
+			<source ref="id19"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="-170" y="-68">logged_in!</label>
+			<label kind="assignment" x="-161" y="-51">timer=0</label>
+		</transition>
+		<transition>
+			<source ref="id24"/>
+			<target ref="id22"/>
+			<label kind="guard" x="78" y="-85">timer&lt;10</label>
+			<label kind="synchronisation" x="60" y="-76">manage_cmt?</label>
+			<nail x="60" y="-51"/>
+		</transition>
+		<transition>
+			<source ref="id24"/>
+			<target ref="id21"/>
+			<label kind="guard" x="8" y="-17">timer&lt;10</label>
+			<label kind="synchronisation" x="255" y="34">manage_ar?</label>
+			<nail x="8" y="17"/>
+		</transition>
+		<transition>
+			<source ref="id24"/>
+			<target ref="id20"/>
+			<label kind="guard" x="17" y="-153">timer&lt;10</label>
+			<label kind="synchronisation" x="8" y="-136">manage_prof?</label>
+		</transition>
+		<transition>
+			<source ref="id23"/>
+			<target ref="id25"/>
+			<label kind="synchronisation" x="-391" y="-195">prof_failed!</label>
+			<nail x="-391" y="-170"/>
+			<nail x="-391" y="-59"/>
+		</transition>
+		<transition>
+			<source ref="id23"/>
+			<target ref="id25"/>
+			<label kind="synchronisation" x="-374" y="-119">new_prof!</label>
+		</transition>
+		<transition>
+			<source ref="id25"/>
+			<target ref="id19"/>
+			<label kind="synchronisation" x="-272" y="-68">log_in?</label>
+			<nail x="-255" y="-51"/>
+		</transition>
+		<transition>
+			<source ref="id25"/>
+			<target ref="id23"/>
+			<label kind="synchronisation" x="-289" y="-187">create_prof?</label>
+			<nail x="-255" y="-119"/>
+			<nail x="-263" y="-161"/>
+		</transition>
+	</template>
+>>>>>>> Stashed changes
+	<system>// Place template instantiations here.
+
+
+// List one or more processes to be composed into a system.
+<<<<<<< Updated upstream
+system blog, user;</system>
+</nta>
+=======
+system blog, user;</system>
+</nta>
+>>>>>>> Stashed changes

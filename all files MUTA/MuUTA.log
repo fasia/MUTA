@@ -1,0 +1,68 @@
+2018-01-04 12:35:39,155 - __main__ - INFO - *****************************Generator has started.****************************************
+2018-01-04 12:35:39,177 - __main__ - INFO - CN started.
+2018-01-04 13:07:45,302 - __main__ - INFO - CN finnished.
+2018-01-04 13:07:45,302 - __main__ - INFO - 0:32:06.125000
+2018-01-04 13:09:04,519 - __main__ - INFO - *****************************Generator has started.****************************************
+2018-01-04 13:09:04,556 - __main__ - INFO - RT started.
+2018-01-04 13:11:09,190 - __main__ - INFO - RT finnished.
+2018-01-04 13:11:09,190 - __main__ - INFO - 0:02:04.633000
+2018-01-04 15:51:04,507 - __main__ - INFO - *****************************Generator has started.****************************************
+2018-01-04 15:51:04,529 - __main__ - INFO - CS started.
+2018-01-04 16:59:39,316 - __main__ - INFO - CS finnished.
+2018-01-04 16:59:39,316 - __main__ - INFO - 1:08:34.788000
+2018-01-04 16:59:39,316 - __main__ - INFO - CT started.
+2018-01-04 18:18:01,832 - __main__ - INFO - CT finnished.
+2018-01-04 18:18:01,832 - __main__ - INFO - 1:18:22.515000
+2018-01-08 11:11:22,596 - __main__ - INFO - *****************************Generator has started.****************************************
+2018-01-08 11:11:22,756 - __main__ - INFO - DA started.
+2018-01-09 05:55:19,473 - __main__ - INFO - DA finnished.
+2018-01-09 05:55:19,473 - __main__ - INFO - 18:43:56.717000
+
+
+2018-01-09 11:18:23,345 - __main__ - INFO - RG started.
+2018-01-09 11:42:52,677 - __main__ - INFO - RG finnished.
+2018-01-09 11:42:52,677 - __main__ - INFO - 0:24:29.333000
+
+
+2018-01-11 12:24:03,746 - __main__ - INFO - CN started.
+2018-01-11 13:15:26,836 - __main__ - INFO - CN finnished.
+2018-01-11 13:15:26,836 - __main__ - INFO - 0:51:23.090000
+2018-01-11 14:24:46,607 - __main__ - INFO - CN for Blog_Refinement5m5_u0 started.
+2018-01-11 14:25:20,101 - __main__ - INFO - CN for Blog_Refinement5 m5_u0 started.
+2018-01-11 14:26:57,059 - __main__ - INFO - CN for Blog_Refinement5 m5_u0 started.
+2018-01-11 14:58:38,609 - __main__ - INFO - CN for Blog_Refinement5 SUT5 started.
+2018-01-11 15:30:45,892 - __main__ - INFO - CN finnished.
+2018-01-11 15:30:45,892 - __main__ - INFO - 0:32:07.283000
+2018-01-11 15:30:45,892 - __main__ - INFO - CS for Blog_Refinement5 SUT5 started.
+2018-01-11 15:53:47,273 - __main__ - INFO - CS finnished.
+2018-01-11 15:53:47,275 - __main__ - INFO - 0:23:01.381000
+2018-01-11 15:53:47,275 - __main__ - INFO - CT for Blog_Refinement5 SUT5 started.
+2018-01-11 16:04:24,730 - __main__ - INFO - CT finnished.
+2018-01-11 16:04:24,730 - __main__ - INFO - 0:10:37.455000
+2018-01-11 16:04:24,730 - __main__ - INFO - RG for Blog_Refinement5 SUT5 started.
+2018-01-11 16:06:37,816 - __main__ - INFO - RG finnished.
+2018-01-11 16:06:37,816 - __main__ - INFO - 0:02:13.087000
+2018-01-26 14:09:35,085 - __main__ - INFO - CN for Blog_Refinement5 SUT5 started.
+2018-01-29 10:25:27,125 - __main__ - INFO - CGL started.
+2018-01-29 10:25:32,924 - __main__ - INFO - CGL finnished.
+2018-01-29 10:25:32,924 - __main__ - INFO - 0:00:05.800000
+2018-01-29 10:25:43,349 - __main__ - INFO - CGL started.
+2018-01-29 10:25:49,056 - __main__ - INFO - CGL finnished.
+2018-01-29 10:25:49,056 - __main__ - INFO - 0:00:05.707000
+2018-01-29 10:26:31,621 - __main__ - INFO - CGL started.
+2018-01-29 10:26:37,450 - __main__ - INFO - CGL finnished.
+2018-01-29 10:26:37,450 - __main__ - INFO - 0:00:05.829000
+2018-01-29 10:28:15,387 - __main__ - INFO - CGL started.
+2018-01-29 10:33:41,490 - __main__ - INFO - CGL finnished.
+2018-01-29 10:33:41,490 - __main__ - INFO - 0:05:26.104000
+2018-01-29 12:18:24,118 - __main__ - INFO - CGL started.
+2018-01-29 12:28:51,249 - __main__ - INFO - CGV started.
+2018-01-29 14:10:34,980 - __main__ - INFO - CGV finnished.
+2018-01-29 14:10:34,980 - __main__ - INFO - 1:41:43.732000
+2018-01-29 14:54:36,553 - __main__ - INFO - CGL started.
+2018-01-29 14:59:46,068 - __main__ - INFO - CGL started.
+2018-01-29 15:35:54,032 - __main__ - INFO - CGL finnished.
+2018-01-29 15:35:54,032 - __main__ - INFO - 0:36:07.964000
+2018-01-29 15:35:54,032 - __main__ - INFO - CGV started.
+2018-01-29 17:14:54,003 - __main__ - INFO - CGV finnished.
+2018-01-29 17:14:54,003 - __main__ - INFO - 1:38:59.970000

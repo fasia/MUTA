@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_1.dtd'><nta><declaration>/*
+ * The model is adapted for distributed (asynchronous) setting for testing using TRON.
+ * The original one can be found in Uppaal demo examples:
+ * "Automatic Verification of Real-Time Communicating Systems by Constraint Solving", 
+ * by Wang Yi, Paul Pettersson and Mats Daniels. In Proceedings of the 7th International
+ * Conference on Formal Description Techniques, pages 223-238, North-Holland. 1994.
+ */
+
+const int N = 3;         // # trains
+typedef int[0,N-1] id_t;
+
+meta id_t envTrain, iutTrain;
+
+chan appr, stop, leave;
+chan go;
+
+const int INPMAX = N;
+typedef int[0,INPMAX-1] input_t;
+
+const int OUTMAX = N;
+typedef int[0,OUTMAX-1] output_t;
+</declaration><template><name x="40" y="16">Template</name><parameter>const id_t id, id_t &amp;train</parameter><declaration>clock x;</declaration><location id="id0" x="8" y="96"><name x="-40" y="80">Safe</name></location><location id="id1" x="96" y="328"><name x="112" y="336">Stop</name></location><location id="id2" x="192" y="96"><name x="208" y="80">Cross</name><label kind="invariant" x="208" y="96">x&lt;=5</label></location><location id="id3" x="8" y="232"><name x="-56" y="216">Appr</name><label kind="invariant" x="-56" y="232">x&lt;=20</label></location><location id="id4" x="192" y="232"><name x="208" y="216">Start</name><label kind="invariant" x="208" y="232">x&lt;=15</label></location><init ref="id0"/><transition><source ref="id3"/><target ref="id2"/><label kind="guard" x="96" y="168">x&gt;=10</label><label kind="assignment" x="96" y="184">x=0</label></transition><transition><source ref="id3"/><target ref="id1"/><label kind="guard" x="-24" y="272">x&lt;=10 &amp;&amp;train==id</label><label kind="synchronisation" x="-24" y="304">stop?</label></transition><transition><source ref="id2"/><target ref="id0"/><label kind="guard" x="64" y="64">x&gt;=3</label><label kind="synchronisation" x="64" y="80">leave!</label><label kind="assignment" x="64" y="96">train=id</label></transition><transition><source ref="id0"/><target ref="id3"/><label kind="synchronisation" x="-56" y="128">appr!</label><label kind="assignment" x="-56" y="144">train=id,x=0</label></transition><transition><source ref="id4"/><target ref="id2"/><label kind="guard" x="200" y="160">x&gt;=7</label><label kind="assignment" x="200" y="176">x=0</label></transition><transition><source ref="id1"/><target ref="id4"/><label kind="guard" x="160" y="264">train==id</label><label kind="synchronisation" x="160" y="280">go?</label><label kind="assignment" x="160" y="296">x=0</label></transition></template><template><name x="40" y="16">Gate</name><parameter>id_t &amp;train, chan &amp;appr, chan &amp;leave, chan &amp;go, chan &amp;stop</parameter><declaration>clock x;
+
+id_t list[N+2];
+int[0,N+1] len, noted;
+
+// Put an element at the end of the queue
+void enqueue(id_t element) { list[len++] = element; }
+
+// Remove the front element of the queue
+void dequeue() {
+    int i = 0;
+    len--;
+    while (i &lt; len) {
+        list[i] = list[i + 1];
+        i++;
+    }
+    list[i] = 0;
+    noted--;
+}
+
+// Returns the front element of the queue
+id_t front() {  return list[0]; }
+</declaration><location id="id5" x="384" y="352"><name x="360" y="368">Closed</name></location><location id="id6" x="384" y="152"><name x="400" y="120">TrainLeft</name><label kind="invariant" x="400" y="136">x&lt;=1</label></location><location id="id7" x="160" y="352"><name x="152" y="376">Notify</name><label kind="invariant" x="152" y="392">x&lt;=1</label></location><location id="id8" x="160" y="152"><name x="128" y="120">Opened</name></location><init ref="id8"/><transition><source ref="id6"/><target ref="id7"/><label kind="guard" x="24" y="72">len&gt;1 &amp;&amp;
+noted==0</label><label kind="assignment" x="24" y="104">noted++</label><nail x="208" y="88"/><nail x="8" y="88"/><nail x="8" y="232"/></transition><transition><source ref="id7"/><target ref="id6"/><label kind="guard" x="240" y="232">train==front()</label><label kind="synchronisation" x="240" y="248">leave?</label><label kind="assignment" x="240" y="264">dequeue()</label><nail x="240" y="248"/><nail x="344" y="248"/></transition><transition><source ref="id6"/><target ref="id5"/><label kind="guard" x="416" y="320">len &gt; 0 &amp;&amp;
+noted==len</label><label kind="synchronisation" x="416" y="352">go!</label><label kind="assignment" x="416" y="368">train=front()</label><nail x="512" y="192"/><nail x="512" y="352"/></transition><transition><source ref="id6"/><target ref="id7"/><label kind="guard" x="272" y="400">len&gt;1 &amp;&amp; noted&lt;len &amp;&amp; noted&gt;0</label><label kind="synchronisation" x="272" y="416">go!</label><label kind="assignment" x="272" y="432">train=front()</label><nail x="536" y="152"/><nail x="536" y="416"/><nail x="240" y="416"/></transition><transition><source ref="id6"/><target ref="id6"/><label kind="synchronisation" x="392" y="80">appr?</label><label kind="assignment" x="392" y="96">enqueue(train)</label><nail x="384" y="88"/><nail x="344" y="88"/></transition><transition><source ref="id8"/><target ref="id6"/><label kind="guard" x="200" y="176">train==front()</label><label kind="synchronisation" x="200" y="192">leave?</label><label kind="assignment" x="200" y="208">dequeue(),
+x=0</label><nail x="184" y="192"/><nail x="320" y="192"/></transition><transition><source ref="id5"/><target ref="id7"/><label kind="synchronisation" x="240" y="288">appr?</label><label kind="assignment" x="240" y="304">enqueue(train),
+x=0</label><nail x="352" y="304"/><nail x="232" y="304"/></transition><transition><source ref="id7"/><target ref="id7"/><label kind="synchronisation" x="0" y="312">appr?</label><label kind="assignment" x="0" y="328">enqueue(train)</label><nail x="24" y="296"/><nail x="24" y="352"/></transition><transition><source ref="id7"/><target ref="id5"/><label kind="guard" x="224" y="336">noted==len-1</label><label kind="synchronisation" x="224" y="352">stop!</label><label kind="assignment" x="224" y="368">train=list[noted],
+noted++</label></transition><transition><source ref="id6"/><target ref="id8"/><label kind="guard" x="200" y="112">len==0 ||
+(len==1 &amp;&amp;
+noted==0)</label><label kind="assignment" x="200" y="152">noted=len</label></transition><transition><source ref="id8"/><target ref="id7"/><label kind="guard" x="112" y="232">len&gt;0</label><label kind="synchronisation" x="112" y="248">appr?</label><label kind="assignment" x="112" y="264">enqueue(train),
+x=0</label></transition><transition><source ref="id5"/><target ref="id6"/><label kind="guard" x="360" y="240">train==front()</label><label kind="synchronisation" x="360" y="256">leave?</label><label kind="assignment" x="360" y="272">dequeue(),
+x=0</label></transition><transition><source ref="id7"/><target ref="id7"/><label kind="guard" x="32" y="408">noted&lt;len-1</label><label kind="synchronisation" x="32" y="424">stop!</label><label kind="assignment" x="32" y="440">train=list[noted],
+noted++</label><nail x="128" y="424"/><nail x="24" y="424"/><nail x="24" y="400"/></transition><transition><source ref="id8"/><target ref="id8"/><label kind="guard" x="16" y="160">len == 0</label><label kind="synchronisation" x="16" y="176">appr?</label><label kind="assignment" x="16" y="192">enqueue(train),
+noted++</label><nail x="48" y="152"/><nail x="48" y="224"/><nail x="128" y="224"/></transition></template><template><name>InpAdapter</name><parameter>const input_t id, const int delay, chan &amp;inp, id_t &amp;inpdata, chan &amp;out, id_t &amp;outdata, input_t &amp;order</parameter><declaration>clock x;
+id_t data;</declaration><location id="id9" x="-72" y="-280"><committed/></location><location id="id10" x="-120" y="-232"><label kind="invariant" x="-136" y="-224">x&lt;=delay</label></location><location id="id11" x="-120" y="-328"></location><init ref="id11"/><transition><source ref="id10"/><target ref="id9"/><label kind="assignment" x="-96" y="-256">outdata=data</label><nail x="-72" y="-232"/></transition><transition><source ref="id9"/><target ref="id11"/><label kind="synchronisation" x="-72" y="-328">out!</label><nail x="-72" y="-328"/></transition><transition><source ref="id11"/><target ref="id10"/><label kind="guard" x="-224" y="-320">order==id</label><label kind="synchronisation" x="-224" y="-303">inp?</label><label kind="assignment" x="-224" y="-288">data=inpdata,
+x=0,
+order=(order+1)
+%INPMAX</label></transition></template><template><name>OutAdapter</name><parameter>const output_t id, const int delay, chan &amp;inp, id_t &amp;inpdata, chan &amp;out, id_t &amp;outdata, output_t &amp;order</parameter><declaration>clock x;
+id_t data;</declaration><location id="id12" x="-72" y="-280"><committed/></location><location id="id13" x="-120" y="-232"><label kind="invariant" x="-136" y="-224">x&lt;=delay</label></location><location id="id14" x="-120" y="-328"></location><init ref="id14"/><transition><source ref="id13"/><target ref="id12"/><label kind="assignment" x="-96" y="-256">outdata=data</label><nail x="-72" y="-232"/></transition><transition><source ref="id12"/><target ref="id14"/><label kind="synchronisation" x="-72" y="-328">out!</label><nail x="-72" y="-328"/></transition><transition><source ref="id14"/><target ref="id13"/><label kind="guard" x="-200" y="-320">order==id</label><label kind="synchronisation" x="-200" y="-303">inp?</label><label kind="assignment" x="-200" y="-288">data=inpdata,
+x=0,
+order=(order+1)
+%OUTMAX</label></transition></template><template><name>OutAdapterDet</name><parameter>chan &amp;inp, id_t &amp;inpdata, chan &amp;out, id_t &amp;outdata</parameter><location id="id15" x="16" y="-328"><committed/></location><location id="id16" x="-120" y="-328"></location><init ref="id16"/><transition><source ref="id15"/><target ref="id16"/><label kind="synchronisation" x="-80" y="-328">out!</label></transition><transition><source ref="id16"/><target ref="id15"/><label kind="synchronisation" x="-112" y="-384">inp?</label><label kind="assignment" x="-112" y="-368">outdata=inpdata</label><nail x="-120" y="-368"/><nail x="16" y="-368"/></transition></template><system>chan apprIUT, stopIUT, leaveIUT;
+chan goIUT;
+
+train(const id_t id) = Template(id, envTrain);
+gate = Gate(iutTrain, apprIUT, leaveIUT, goIUT, stopIUT);
+
+input_t apprOrder, leaveOrder;
+//output_t goOrder, stopOrder;
+
+ApprAdapter(const input_t id) = InpAdapter(id, 1, appr, envTrain, apprIUT, iutTrain, apprOrder);
+LeaveAdapter(const input_t id) = InpAdapter(id, 1, leave, envTrain, leaveIUT, iutTrain, leaveOrder);
+
+/*
+GoAdapter(const output_t id) = OutAdapter(id, 1, goIUT, iutTrain, go, envTrain, goOrder);
+StopAdapter(const output_t id) = OutAdapter(id, 1, stopIUT, iutTrain, stop, envTrain, stopOrder);
+*/
+GoAdapter = OutAdapterDet(goIUT, iutTrain, go, envTrain);
+StopAdapter = OutAdapterDet(stopIUT, iutTrain, stop, envTrain);
+
+
+system train, gate, ApprAdapter, LeaveAdapter, GoAdapter, StopAdapter;
+</system></nta>
